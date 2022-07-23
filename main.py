@@ -1,14 +1,19 @@
 import os
 import random
 import re
-
-from flask import Flask
+import pickle
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
 from dotenv import load_dotenv
+from flask import Flask
 from slack import WebClient
 from slackeventsapi import SlackEventAdapter
+
+from botMessages import TRASHBOT_HELP_MSG, TRASH_BOT_REPLIES, TRASH_BOT_SHIT_HIT_THE_FAN, TRASH_BOT_LOVE, \
+    TRASH_BOT_HATE, \
+    TRASH_BOT_DONT_UNDERSTAND, MESSAGE_BLOCK, TRASH_BOT_NOT_FOUND_LINK, TRASH_BOT_NOT_PREVIOUS_LINK, \
+    TRASH_BOT_SUCCESS_REPLIES
 
 load_dotenv()
 
@@ -19,83 +24,81 @@ PLAYLIST_ID = os.environ["PLAYLIST_ID"]
 scopes = [os.environ["SCOPE"]]
 API_SERVICE_NAME = "youtube"
 API_VERSION = "v3"
-CLIENT_SECRET_FILE = ""
+YOUTUBE_API_KEY = os.environ["YOUTUBE_API_KEY"]
+YOUTUBE_CLIENT_SECRETS_FILE = "client_secret_1092500365377-73nfre97br2l69v5n8e6l9gb6u32hjt7.apps.googleusercontent.com.json"
+YOUTUBE_MISSING_SECRETS_MSG = "Missing Youtube client secrets"
 
 app = Flask(__name__)
 
 slack_web_client = WebClient(token=SLACK_BOT_TOKEN)
 slack_event_adapter = SlackEventAdapter(SLACK_SIGNING_SECRET, "/slack/events", app)
 
-TRASHBOT_HELP_MSG = f"""
-:rocket: Heeellloo I am TrashBot! I will manage this channels trash videos!
+YOUTUBE_URL_REGEX = ('(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be.com\/\S*(?:watch|embed)(?:(?:(?=\/[-a-zA-Z0-9_]{11,}(?!\S))\/)|(?:\S*v=|v\/)))([-a-zA-Z0-9_]{11,})')
 
-Mention me in a message and I can do the following: 
-    @trashbot help -> Print this message
-    @trashbot random trash -> I will get a random trash for you
-    @trashbot :point_up: save -> I will save the video from the previous post to the trash playlist
-    @trashbot :point_right: save videoUrl ->  I will save the video in this message to the trash playlist
-
-The trash playlist is here:
-    https://www.youtube.com/playlist?list={PLAYLIST_ID}
-    
-You can check out my source code here:
-    https://github.com/NorbertRuff/trashBot
-"""
-
-MESSAGE_BLOCK = {
-    "type": "section",
-    "text": {
-        "type": "mrkdwn",
-        "text": "",
-    },
+LAST_YOUTUBE_LINK_DETAILS = {
+    'message': None,
+    'video_id': None,
+    'rating': None,
 }
-
-TRASHBOT_REPLIES = ['This is a classic -> ', 'Biip-bop-bup -> ', 'Voila! -> ', 'I love trash -> ', 'just for you -> ']
-TRASHBOT_LOVE = 'WOW thanks :heart_eyes: I Love you'
-TRASHBOT_HATE = ':cry: sorry, I hate you'
-TRASHBOT_NOT_FOUND = 'Huh? I did not understand that'
-TRASHBOT_SHIT_HIT_THE_FAN = 'Something went wrong, I hit the fan'
-
-"""
-Regular expressions to capture the YouTube video Id
-"""
-YOUTUBE_URL_REGEX = ('<(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=([a-zA-Z0-9_]+)|youtu\.be\/([a-zA-Z\d_]+))(?:&.*)?>')
-last_yt_url = ""
-# Disable OAuthlib's HTTPS verification when running locally.
-# *DO NOT* leave this option enabled in production.
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 
 def handle_bot_command(text):
     if "help" in text.lower():
         return TRASHBOT_HELP_MSG
-    if any(word in text.lower() for word in ['random', 'get', 'surprise', 'get a random']) and any(word in text.lower() for word in ['trash', 'video']):
+    if any(word in text.lower() for word in ['random', 'get', 'surprise', 'get a random', 'trash', 'trash video', 'random video']):
         video = get_random_from_playlist()
         if video:
-            return f'{random.choice(TRASHBOT_REPLIES)} {video}'
-        return TRASHBOT_SHIT_HIT_THE_FAN
-    if ':point_right: save' in text.lower():
+            return f'{random.choice(TRASH_BOT_REPLIES)} {video}'
+        return TRASH_BOT_SHIT_HIT_THE_FAN
+    if any(word in text.lower() for word in [':point_right:', 'save', 'add', 'add to', 'add to playlist', 'add to trash']):
+        print(text)
         try:
             video_id = match_youtube_url(text)
-            save_video_to_playlist(video_id)
-            return f'{random.choice(TRASHBOT_REPLIES)} Video added to trash playlist'
+            if not video_id:
+                return TRASH_BOT_NOT_FOUND_LINK
+            response = save_video_to_playlist(video_id)
+            if response == "success":
+                return f'{random.choice(TRASH_BOT_SUCCESS_REPLIES)} Video added to trash playlist'
+            return TRASH_BOT_SHIT_HIT_THE_FAN
         except Exception as e:
-            return TRASHBOT_SHIT_HIT_THE_FAN
-    if any(word in text.lower() for word in [':point_up: save', ':point_up_2: save']):
+            return TRASH_BOT_SHIT_HIT_THE_FAN
+    if any(word in text.lower() for word in [':point_up:', ':point_up_2:']) and any(word in text.lower() for word in ['save', 'playlist']):
+        if not LAST_YOUTUBE_LINK_DETAILS['video_id']:
+            return TRASH_BOT_NOT_PREVIOUS_LINK
         try:
-            save_video_to_playlist(last_yt_url)
-            return f'{random.choice(TRASHBOT_REPLIES)} Video added to trash playlist'
+            response = save_video_to_playlist(video_id=LAST_YOUTUBE_LINK_DETAILS['video_id'])
+            if response == "success":
+                return f'{random.choice(TRASH_BOT_SUCCESS_REPLIES)} Video added to trash playlist'
+            return TRASH_BOT_SHIT_HIT_THE_FAN
         except Exception as e:
-            return TRASHBOT_SHIT_HIT_THE_FAN
+            return TRASH_BOT_SHIT_HIT_THE_FAN
     if "good bot" in text.lower():
-        return TRASHBOT_LOVE
+        return TRASH_BOT_LOVE
     if "bad bot" in text.lower():
-        return TRASHBOT_HATE
-    return TRASHBOT_NOT_FOUND
+        return TRASH_BOT_HATE
+    return TRASH_BOT_DONT_UNDERSTAND
+
+
+def get_authenticated_service():
+    """
+    Returns an instance of an Authenticated YouTube service object.
+    """
+    if os.path.exists("CREDENTIALS_PICKLE_FILE"):
+        with open("CREDENTIALS_PICKLE_FILE", 'rb') as f:
+            credentials = pickle.load(f)
+    else:
+
+        credentials = ser
+        with open("CREDENTIALS_PICKLE_FILE", 'wb') as f:
+            pickle.dump(credentials, f)
+    return googleapiclient.discovery.build(
+        API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
 
 def save_video_to_playlist(video_id):
     """Save a video to the trash playlist"""
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    youtube = get_authenticated_service()
     request = youtube.playlistItems().insert(
         part="snippet",
         body={
@@ -109,19 +112,14 @@ def save_video_to_playlist(video_id):
         },
     )
     response = request.execute()
-    print(response)
-    return response
+    if response["snippet"]["playlistId"] == PLAYLIST_ID:
+        return "success"
+    return "failure"
 
 
 def get_yt_playlist():
     """Get the trash video playlist"""
-    # Get credentials and create an API client
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        CLIENT_SECRET_FILE, scopes)
-    credentials = flow.run_local_server()
-    youtube = googleapiclient.discovery.build(
-        API_SERVICE_NAME, API_VERSION, credentials=credentials)
-
+    youtube = get_authenticated_service()
     request = youtube.playlistItems().list(
         part="contentDetails",
         maxResults=100,
@@ -146,6 +144,7 @@ def get_random_from_playlist():
 def match_youtube_url(text):
     """Match a YouTube URL"""
     youtube_regex_match = re.search(YOUTUBE_URL_REGEX, text)
+    print(youtube_regex_match)
     if youtube_regex_match:
         return youtube_regex_match.group(1)
     return None
@@ -168,10 +167,14 @@ def handle_message(payload):
     """Handle messages sent to the bot"""
     event = payload.get("event", {})
     text = event.get("text", "")
+    user = event.get("user", "")
     match = match_youtube_url(text)
     if match:
-        global last_yt_url
-        last_yt_url = match
+        LAST_YOUTUBE_LINK_DETAILS['video_id'] = match
+        LAST_YOUTUBE_LINK_DETAILS['message'] = text
+        LAST_YOUTUBE_LINK_DETAILS['user'] = user
+    print(f"Received message: {text}")
+    print(LAST_YOUTUBE_LINK_DETAILS)
 
 
 if __name__ == "__main__":

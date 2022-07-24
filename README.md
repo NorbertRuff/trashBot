@@ -137,8 +137,7 @@ Mention trashBot in a message and he can do the following:
     trashBot will save the video from the previous valid youtube link to the trash playlist
    
 - @TrashBot
-  :point_right: + 'save' or 'add' or 'add to trash' + <video Url> ->
-     trashBot will save the <video Url> in this message to the trash playlist
+  :point_right: + 'save' or 'add' or 'add to trash' + video Url -> trashBot will save the <video Url> in this message to the trash playlist
 
 The trash playlist is here:
    https://www.youtube.com/playlist?list=PLPZyfP4x4WDogOQik-PdSwAN4YDVbygpW

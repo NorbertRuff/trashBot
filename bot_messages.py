@@ -17,9 +17,9 @@ Mention me in a message and I can do the following:
      I will give you the link to the last captured video
     @trashbot + 'random' or 'surprise' or 'trash' or 'trash video' ->
      I will get a random trash for you
-    @trashbot + :point_up: + 'save' or 'playlist' keyword ->
+    @trashbot + :point_up: or :point_up_2: + 'save' or 'playlist' keyword ->
      I will save the video from the previous valid youtube link to the trash playlist
-    @trashbot + :point_up: or :point_up_2: + 'save' or 'add' or 'add to trash' + <video Url> ->
+    @trashbot + :point_right: + 'save' or 'add' or 'add to trash' + <video Url> ->
       I will save the <video Url> in this message to the trash playlist
 
 The trash playlist is here:

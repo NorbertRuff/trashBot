@@ -1,10 +1,15 @@
-![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/logo.png?raw=true)
-
 ## <div style="color:#f59800" align="center">---|Trash Bot|---</div>
+![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/logo.png?raw=true)
 
 A bot for slack to manage your trash videos!
 
+Everybody loves trash videos and most of the companies have some channel for some random bs videos.
 
+The goal of this project was to create a slack app that can identify, and save theese videos on a youtube account playlist 
+ 
+It can identify the last valid youtube from the channel messages, and save it on a youtube accounts playlist with a command.
+
+It can also save directly a video with a emoji command, or fetch a random video from that playlist.
  
 # <div style="color:#f59800" align="center">---|👨‍💻 Tech Stack|---</div>
 
@@ -28,10 +33,13 @@ A bot for slack to manage your trash videos!
 ## Screenshots
 
 ![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot1.png?raw=true)
+---
 
 ![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot2.png?raw=true)
+---
 
 ![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot3.png?raw=true)
+---
 
 
 ## <div style="color:#f59800" align="center">---|⛑️Environment Variables|---</div>
@@ -106,7 +114,7 @@ ngrok http <YOUR PORT>
 
 ## <div style="color:#f59800" align="center">---|💺Usage/Examples|---</div>
 
-Mention trashBot in a message and I can do the following:
+Mention trashBot in a message and he can do the following:
    
 - @TrashBot
   'help' ->

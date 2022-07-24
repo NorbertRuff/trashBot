@@ -133,11 +133,11 @@ Mention trashBot in a message and he can do the following:
     trashBot will get a random trash for you
    
 - @TrashBot
-  :point_up: + 'save' or 'playlist' keyword ->
+  :point_up: or :point_up_2: + 'save' or 'playlist' keyword ->
     trashBot will save the video from the previous valid youtube link to the trash playlist
    
 - @TrashBot
-  :point_up: or :point_up_2: + 'save' or 'add' or 'add to trash' + <video Url> ->
+  :point_right: + 'save' or 'add' or 'add to trash' + <video Url> ->
      trashBot will save the <video Url> in this message to the trash playlist
 
 The trash playlist is here:

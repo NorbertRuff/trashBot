@@ -128,4 +128,4 @@ def handle_message(payload):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=os.environ.get('PORT', 3000))
+    app.run(port=os.environ.get('PORT', 3000))

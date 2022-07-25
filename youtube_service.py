@@ -1,3 +1,4 @@
+import json
 import os
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
@@ -8,7 +9,6 @@ PLAYLIST_ID = os.environ["PLAYLIST_ID"]
 scopes = [os.environ["SCOPE"]]
 API_SERVICE_NAME = "youtube"
 API_VERSION = "v3"
-YOUTUBE_CLIENT_SECRETS_FILE = "client_secret.json"
 
 
 def get_authenticated_service():
@@ -17,8 +17,8 @@ def get_authenticated_service():
         with open("CREDENTIALS_PICKLE_FILE", 'rb') as f:
             credentials = pickle.load(f)
     else:
-        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-            YOUTUBE_CLIENT_SECRETS_FILE, scopes)
+        config = json.loads(os.environ['CREDENTIALS'])
+        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_config(config, scopes)
         credentials = flow.run_local_server()
     youtube_service = googleapiclient.discovery.build(
         API_SERVICE_NAME, API_VERSION, credentials=credentials)

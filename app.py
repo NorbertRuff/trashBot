@@ -193,7 +193,7 @@ def slack_events():
     return handler.handle(request)
 
 
-# Start your app
-if __name__ == "__main__":
-    handler = SocketModeHandler(app, SLACK_APP_TOKEN)
-    handler.start()
+# # Start your app
+# if __name__ == "__main__":
+#     handler = SocketModeHandler(app, SLACK_APP_TOKEN)
+#     handler.start()

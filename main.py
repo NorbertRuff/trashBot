@@ -2,7 +2,7 @@ import random
 import os
 from dotenv import load_dotenv
 from slack_bolt import App
-from slack_bolt.adapter.flask import SlackRequestHandler
+from slack_bolt.adapter.socket_mode import SocketModeHandler
 from flask import Flask, request
 from bot_messages import *
 import logging
@@ -14,9 +14,6 @@ SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 SLACK_APP_TOKEN = os.environ["SLACK_APP_TOKEN"]
 TRASH_CHANNEL_ID = os.environ["TRASH_CHANNEL_ID"]
 app = App(token=SLACK_BOT_TOKEN)
-
-flask_app = Flask(__name__)
-handler = SlackRequestHandler(app)
 logging.basicConfig(level=logging.DEBUG)
 
 BOT_ID = app.client.auth_test()["user_id"]
@@ -179,11 +176,6 @@ def handle_shortcut_save(ack, body, respond, logger):
     respond(random.choice(TRASH_BOT_ERROR_REPLIES))
 
 
-@flask_app.route("/slack/events", methods=["POST"])
-def slack_events():
-    return handler.handle(request)
-
-
 @app.error
 def custom_error_handler(error, body, logger):
     """Custom error handler"""
@@ -191,6 +183,6 @@ def custom_error_handler(error, body, logger):
     # logger.info(f"Request body: {body}")
 
 
-# if __name__ == "__main__":
-#     handler = SocketModeHandler(app, SLACK_APP_TOKEN)
-#     handler.start()
+if __name__ == "__main__":
+    handler = SocketModeHandler(app, SLACK_APP_TOKEN)
+    handler.start()

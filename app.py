@@ -14,7 +14,7 @@ SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 SLACK_APP_TOKEN = os.environ["SLACK_APP_TOKEN"]
 TRASH_CHANNEL_ID = os.environ["TRASH_CHANNEL_ID"]
 app = App(token=SLACK_BOT_TOKEN)
-logging.basicConfig(level=os.environ["LOG_LEVEL"])
+logging.basicConfig(level=logging.DEBUG)
 
 BOT_ID = app.client.auth_test()["user_id"]
 

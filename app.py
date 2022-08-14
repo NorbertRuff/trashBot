@@ -7,17 +7,12 @@ from bot_messages import *
 import logging
 import data_manager
 import utils
-from flask import Flask, request
-from slack_bolt.adapter.flask import SlackRequestHandler
-
 load_dotenv()
 
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 SLACK_APP_TOKEN = os.environ["SLACK_APP_TOKEN"]
 TRASH_CHANNEL_ID = os.environ["TRASH_CHANNEL_ID"]
 app = App(token=SLACK_BOT_TOKEN)
-flask_app = Flask(__name__)
-handler = SlackRequestHandler(app)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -188,12 +183,7 @@ def custom_error_handler(error, body, logger):
     # logger.info(f"Request body: {body}")
 
 
-@flask_app.route("/slack/events", methods=["POST"])
-def slack_events():
-    return handler.handle(request)
-
-
-# # Start your app
-# if __name__ == "__main__":
-#     handler = SocketModeHandler(app, SLACK_APP_TOKEN)
-#     handler.start()
+# Start your app
+if __name__ == "__main__":
+    handler = SocketModeHandler(app, SLACK_APP_TOKEN)
+    handler.start()

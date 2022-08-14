@@ -94,7 +94,7 @@ Install dependencies
 Start the server
 
 ```bash
-  python3 app.py
+  python3 main.py
 ```
 
 ## Usage

@@ -1,31 +1,23 @@
-import logging
-import os
 import random
-import re
-
+import os
 from dotenv import load_dotenv
-from flask import Flask
-from slack import WebClient
-from slackeventsapi import SlackEventAdapter
-
-from bot_messages import TRASHBOT_HELP_MSG, TRASH_BOT_GENERAL_REPLIES, TRASH_BOT_SHIT_HIT_THE_FAN, TRASH_BOT_LOVE, \
-    TRASH_BOT_HATE, \
-    TRASH_BOT_DONT_UNDERSTAND, MESSAGE_BLOCK, TRASH_BOT_NOT_FOUND_LINK, \
-    TRASH_BOT_SUCCESS_REPLIES, TRASH_BOT_ERROR_REPLIES, TRASH_BOT_ALREADY_IN_PLAYLIST, TRASH_BOT_VIDEO_ADDED, \
-    TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS, TRASH_BOT_UPLOAD_LAST_VALID_URL_KEYWORDS, TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS, \
-    TRASH_BOT_PLAYLIST
-from youtube_service import get_yt_playlist, insert_video_to_youtube_playlist
+from slack_bolt import App
+from slack_bolt.adapter.socket_mode import SocketModeHandler
+from bot_messages import *
+import logging
+import data_manager
+import utils
 
 load_dotenv()
-app = Flask(__name__)
 
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
-SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
+SLACK_APP_TOKEN = os.environ["SLACK_APP_TOKEN"]
+TRASH_CHANNEL_ID = os.environ["TRASH_CHANNEL_ID"]
+app = App(token=SLACK_BOT_TOKEN)
+logging.basicConfig(level=os.environ["LOG_LEVEL"])
 
-slack_web_client = WebClient(token=SLACK_BOT_TOKEN)
-slack_event_adapter = SlackEventAdapter(SLACK_SIGNING_SECRET, "/slack/events", app)
+BOT_ID = app.client.auth_test()["user_id"]
 
-YOUTUBE_URL_REGEX = ('(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be.com\/\S*(?:watch|embed)(?:(?:(?=\/[-a-zA-Z0-9_]{11,}(?!\S))\/)|(?:\S*v=|v\/)))([-a-zA-Z0-9_]{11,})')
 
 LAST_YOUTUBE_LINK_DETAILS = {
     'message': None,
@@ -33,99 +25,165 @@ LAST_YOUTUBE_LINK_DETAILS = {
 }
 
 
-def video_is_in_playlist(video_id):
-    """Check if a video is in the playlist"""
-    return video_id in [item['contentDetails']['videoId'] for item in get_yt_playlist()['items']]
-
-
-def handle_bot_command(text):
+def handle_event_text(text, user):
     """Handle a bot commands"""
     if "help" in text.lower():
         return TRASHBOT_HELP_MSG
+    if "help" in text.lower():
+        return TRASHBOT_HELP_MSG
     if any(word in text.lower() for word in TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS):
-        video = get_random_from_playlist()
+        playlist = data_manager.get_all_videos()
+        video = get_random_from_playlist(playlist)
         if video:
             return f'{random.choice(TRASH_BOT_GENERAL_REPLIES)} {video}'
         return TRASH_BOT_SHIT_HIT_THE_FAN
-    if any(word in text.lower() for word in [':point_right:']) and any(word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
-        video_id = match_youtube_url(text)
-        return try_to_save_video(video_id)
-    if any(word in text.lower() for word in [':point_up:', ':point_up_2:']) and any(word in text.lower() for word in TRASH_BOT_UPLOAD_LAST_VALID_URL_KEYWORDS):
-        video_id = LAST_YOUTUBE_LINK_DETAILS['video_id']
-        return try_to_save_video(video_id)
-    if "playlist" in text.lower():
-        return f'{TRASH_BOT_GENERAL_REPLIES[1]} {TRASH_BOT_PLAYLIST}'
-    if "last" in text.lower():
-        if LAST_YOUTUBE_LINK_DETAILS['video_id']:
-            return f'{random.choice(TRASH_BOT_GENERAL_REPLIES)} https://www.youtube.com/watch?v={LAST_YOUTUBE_LINK_DETAILS["video_id"]}'
-        return f'{random.choice(TRASH_BOT_ERROR_REPLIES)} No video found'
+    if any(word in text.lower() for word in [':point_right:']) and any(
+            word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
+        video_id = utils.match_youtube_url(text)
+        return save_video(video_id, user)
     if "good bot" in text.lower():
-        return TRASH_BOT_LOVE
+        return random.choice(TRASH_BOT_LOVE)
     if "bad bot" in text.lower():
-        return TRASH_BOT_HATE
+        return random.choice(TRASH_BOT_HATE)
     return TRASH_BOT_DONT_UNDERSTAND
 
 
-def try_to_save_video(video_id):
-    """Try to save a video to the playlist"""
+def save_video(video_id, user):
+    """Save a video to the playlist"""
     try:
         if not video_id:
             return TRASH_BOT_NOT_FOUND_LINK
-        if video_is_in_playlist(video_id):
+        video_exist = data_manager.video_exists(video_id)
+        if video_exist['exists']:
             return f'{random.choice(TRASH_BOT_ERROR_REPLIES)} {TRASH_BOT_ALREADY_IN_PLAYLIST} video id:{video_id}'
-        response = insert_video_to_youtube_playlist(video_id)
-        if response == "success":
-            return f'{random.choice(TRASH_BOT_SUCCESS_REPLIES)} {TRASH_BOT_VIDEO_ADDED}'
-        return TRASH_BOT_SHIT_HIT_THE_FAN
+        data_manager.put_video_in_table(video_id, user)
+        return f'{random.choice(TRASH_BOT_SUCCESS_REPLIES)} {TRASH_BOT_VIDEO_ADDED}'
     except Exception as e:
         logging.error(e)
         return TRASH_BOT_SHIT_HIT_THE_FAN
 
 
-def get_random_from_playlist():
+def get_random_from_playlist(playlist):
     """Get a random trash video"""
-    try:
-        playlist = get_yt_playlist()
-        random_number = random.randint(0, len(playlist['items']) - 1)
-        video_id = playlist['items'][random_number]['contentDetails']['videoId']
-    except Exception as e:
-        logging.error(e)
-        return None
+    random_number = random.randint(0, len(playlist) - 1)
+    video_id = playlist[random_number]['video_id']
     return f'https://www.youtube.com/watch?v={video_id}'
 
 
-def match_youtube_url(text):
-    """Match a YouTube URL"""
-    youtube_regex_match = re.search(YOUTUBE_URL_REGEX, text)
-    if youtube_regex_match:
-        return youtube_regex_match.group(1)
-    return None
+@app.message("hello")
+def handle_hello(message, say):
+    """Handle hello message"""
+    user = message.get("user", "")
+    say(f"Hello! <@{user}> :wave:")
 
 
-@slack_event_adapter.on("app_mention")
-def handle_message(payload):
-    """Handle message event"""
-    event = payload.get("event", {})
-    text = event.get("text", "")
-    channel = event.get("channel", "")
-    message = handle_bot_command(text)
-    MESSAGE_BLOCK["text"]["text"] = message
-    message_to_send = {"channel": channel, "blocks": [MESSAGE_BLOCK]}
-    return slack_web_client.chat_postMessage(**message_to_send)
-
-
-@slack_event_adapter.on("message")
-def handle_message(payload):
-    """Handle messages sent to the bot"""
-    event = payload.get("event", {})
+@app.event("message")
+def handle_message_events(body, event, logger):
+    """Handle message events"""
     text = event.get("text", "")
     user = event.get("user", "")
-    match = match_youtube_url(text)
+    if utils.user_is_bot_or_app_mention(user, event["text"], BOT_ID):
+        return
+    # logger.info(body)
+    match = utils.match_youtube_url(text)
     if match:
+        print(match)
         LAST_YOUTUBE_LINK_DETAILS['video_id'] = match
         LAST_YOUTUBE_LINK_DETAILS['message'] = text
         LAST_YOUTUBE_LINK_DETAILS['user'] = user
 
 
+# <------------------------events------------------------------->
+@app.event("app_mention")
+def handle_bot_mention(body, event, say, logger):
+    """Handle bot mention"""
+    logger.info(body)
+    text = event.get("text", "")
+    user = event.get("user", "")
+    channel = event.get("channel", "")
+    message = handle_event_text(text, user)
+    say(message)
+
+
+@app.event("emoji_changed")
+def handle_emoji_changed_events(event, say, logger):
+    """Handle emoji changed events"""
+    logger.info(event)
+    text = event.get("text", "")
+    user = event.get("user", "")
+    print(event)
+    say(f"Its not really my job, but you should know that an emoji has been changed :{event}:")
+
+
+@app.event("team_join")
+def ask_for_introduction(event, say, logger):
+    """When new user joins channel asks for introduction"""
+    logger.info(event)
+    text = event.get("text", "")
+    user = event.get("user", "")
+    text = f"Welcome to the team, <@{user}>! 🎉 You can introduce yourself in this channel with a greeting trash video."
+    say(text=text)
+
+
+# <------------------------command------------------------------->
+@app.command("/help")
+def handle_help_command(ack, body, respond, logger):
+    """Responds with the bot usage helper message"""
+    logger.info(body)
+    ack()
+    respond(TRASHBOT_HELP_MSG)
+
+
+@app.command("/list")
+def handle_list_command(ack, body, respond, logger):
+    """Responds with the bot usage helper message"""
+    logger.info(body)
+    playlist = data_manager.get_all_videos()
+    response = ""
+    for video in playlist:
+        response += f'#{video["id"]} -> https://www.youtube.com/watch?v={video["video_id"]}\n'
+    ack()
+    respond(response)
+
+
+@app.command("/add")
+def handle_add_command(ack, body, respond, logger):
+    """Responds with the bot usage helper message"""
+    logger.info(body)
+    link = body.get("text", "")
+    user_id = body.get("user_id", "")
+    video_id = utils.match_youtube_url(link)
+    ack()
+    if video_id:
+        response = save_video(video_id, user_id)
+        respond(response)
+    respond(random.choice(TRASH_BOT_ERROR_REPLIES))
+
+
+# <------------------------shortcut------------------------------->
+@app.shortcut("save_shortcut")
+def handle_shortcut_save(ack, body, respond, logger):
+    """Save a video to the playlist"""
+    message = body.get("message", "")
+    text = message.get("text", "")
+    user = body.get("user", "")
+    user_id = user.get("id", "")
+    video_id = utils.match_youtube_url(text)
+    ack()
+    if video_id:
+        response = save_video(video_id, user_id)
+        respond(response)
+    respond(random.choice(TRASH_BOT_ERROR_REPLIES))
+
+
+@app.error
+def custom_error_handler(error, body, logger):
+    """Custom error handler"""
+    logger.exception(f"Error: {error}")
+    # logger.info(f"Request body: {body}")
+
+
+# Start your app
 if __name__ == "__main__":
-    app.run(port=os.environ.get('PORT', 3000))
+    handler = SocketModeHandler(app, SLACK_APP_TOKEN)
+    handler.start()

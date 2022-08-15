@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
-from flask import Flask, request
 from bot_messages import *
 import logging
 import data_manager
@@ -70,6 +69,7 @@ def get_random_from_playlist(playlist):
     return f'https://www.youtube.com/watch?v={video_id}'
 
 
+# <------------------------message------------------------------->
 @app.message("hello")
 def handle_hello(message, say):
     """Handle hello message"""
@@ -77,6 +77,7 @@ def handle_hello(message, say):
     say(f"Hello! <@{user}> :wave:")
 
 
+# <------------------------events------------------------------->
 @app.event("message")
 def handle_message_events(body, event, logger):
     """Handle message events"""
@@ -93,7 +94,6 @@ def handle_message_events(body, event, logger):
         LAST_YOUTUBE_LINK_DETAILS['user'] = user
 
 
-# <------------------------events------------------------------->
 @app.event("app_mention")
 def handle_bot_mention(body, event, say, logger):
     """Handle bot mention"""
@@ -160,7 +160,7 @@ def handle_add_command(ack, body, respond, logger):
     respond(random.choice(TRASH_BOT_ERROR_REPLIES))
 
 
-# <------------------------shortcut------------------------------->
+# <------------------------shortcuts------------------------------->
 @app.shortcut("save_shortcut")
 def handle_shortcut_save(ack, body, respond, logger):
     """Save a video to the playlist"""
@@ -180,7 +180,7 @@ def handle_shortcut_save(ack, body, respond, logger):
 def custom_error_handler(error, body, logger):
     """Custom error handler"""
     logger.exception(f"Error: {error}")
-    # logger.info(f"Request body: {body}")
+    logger.info(f"Request body: {body}")
 
 
 if __name__ == "__main__":

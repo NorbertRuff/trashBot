@@ -12,15 +12,15 @@ I have some command shortcuts:
 I can also save a video with the shortcut you find when clicking on a message ... thingy.
 
 Mention me in a message and I can do the following: 
-    @trashbot + 'help' ->
+    @trashBot + 'help' ->
      I will print this message
-    @trashbot + 'list' ->
+    @trashBot + 'list' ->
      I will list all of the videos from the trash playlist
-    @trashbot + 'random' or 'surprise' or 'trash' or 'video' ->
+    @trashBot + 'random' or 'surprise' or 'trash' or 'video' ->
      I will get a random trash for you
-    @trashbot + :point_up: or :point_up_2: + 'save' or 'playlist' keyword ->
+    @trashBot + :point_up: or :point_up_2: + 'save' or 'playlist' keyword ->
      I will save the video from the previous valid youtube link to the trash playlist
-    @trashbot + :point_right: + 'save' or 'add' or 'add to trash' + <video Url> ->
+    @trashBot + :point_right: + 'save' or 'add' or 'add to trash' + <video Url> ->
       I will save the <video Url> in this message to the trash playlist
 
 You can check out my source code here:
@@ -36,7 +36,7 @@ TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS = ['save', 'add', 'add to playlist', 'add t
 TRASH_BOT_GENERAL_REPLIES = [':rocket: :boom: :point_right: ', 'Biip-bop-bup :robot_face: ', 'Voila!',
                              'I love trash :heart_eyes: ']
 TRASH_BOT_SUCCESS_REPLIES = ['Success!! ', 'Biip-bop-bup :robot_face: ', 'Voila! It\'s done :robot_face: ']
-TRASH_BOT_ERROR_REPLIES = ['Error! ', 'Biip-bop-bup :robot_face: ', 'I can\'t do that :robot_face: ']
+TRASH_BOT_ERROR_REPLIES = ['Error! ', 'Biip-bop-bup uh oh :robot_face: ', 'I can\'t do that :robot_face: ']
 
 TRASH_BOT_LOVE = ['WOW thanks :heart_eyes: I Love you', ':heart_eyes: :heart_eyes: :heart_eyes:']
 TRASH_BOT_HATE = [':cry: sorry, I hate you', ':cry: Than fix me :robot-face:', ':cry: I hate you :cry:']
@@ -50,10 +50,13 @@ TRASH_BOT_SHIT_HIT_THE_FAN = 'Something went wrong, shit hit the fan'
 TRASH_BOT_RATE = {
     "blocks": [
         {
+            "type": "divider"
+        },
+        {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Rate this video"
+                "text": "How painful is this video? Rate it!"
             }
         },
         {
@@ -65,7 +68,7 @@ TRASH_BOT_RATE = {
                         "type": "plain_text",
                         "text": "1"
                     },
-                    "style": "primary",
+                    "style": "danger",
                     "value": "1"
                 },
                 {
@@ -74,7 +77,6 @@ TRASH_BOT_RATE = {
                         "type": "plain_text",
                         "text": "2"
                     },
-                    "style": "primary",
                     "value": "2"
                 },
                 {
@@ -83,7 +85,6 @@ TRASH_BOT_RATE = {
                         "type": "plain_text",
                         "text": "3"
                     },
-                    "style": "primary",
                     "value": "3"
                 },
                 {
@@ -92,7 +93,6 @@ TRASH_BOT_RATE = {
                         "type": "plain_text",
                         "text": "4"
                     },
-                    "style": "primary",
                     "value": "4"
                 },
                 {
@@ -108,4 +108,3 @@ TRASH_BOT_RATE = {
         }
     ]
 }
-

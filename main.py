@@ -3,20 +3,25 @@ import os
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
+
+from bot import TrashBot
 from bot_messages import *
 import logging
 import data_manager
 import utils
+
 load_dotenv()
 
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 SLACK_APP_TOKEN = os.environ["SLACK_APP_TOKEN"]
 TRASH_CHANNEL_ID = os.environ["TRASH_CHANNEL_ID"]
 app = App(token=SLACK_BOT_TOKEN)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 BOT_ID = app.client.auth_test()["user_id"]
-
+BOT_NAME = app.client.auth_test()["user"]
+BOT = TrashBot(BOT_ID, BOT_NAME)
+logging.getLogger().warning(f"BOT_ID: {BOT_ID}")
 
 LAST_YOUTUBE_LINK_DETAILS = {
     'message': None,
@@ -28,83 +33,85 @@ def handle_event_text(text, user):
     """Handle a bot commands"""
     if "help" in text.lower():
         return TRASHBOT_HELP_MSG
-    if "help" in text.lower():
-        return TRASHBOT_HELP_MSG
     if any(word in text.lower() for word in TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS):
-        playlist = data_manager.get_all_videos()
-        video = get_random_from_playlist(playlist)
-        if video:
-            return f'{random.choice(TRASH_BOT_GENERAL_REPLIES)} {video}'
-        return TRASH_BOT_SHIT_HIT_THE_FAN
+        return get_random_video_response()
     if any(word in text.lower() for word in [':point_right:']) and any(
             word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
-        video_id = utils.match_youtube_url(text)
-        return save_video(video_id, user)
+        return save_video(text, user)
     if "good bot" in text.lower():
-        return random.choice(TRASH_BOT_LOVE)
+        return BOT.random_love_reply()
     if "bad bot" in text.lower():
-        return random.choice(TRASH_BOT_HATE)
+        return BOT.random_hate_reply()
     return TRASH_BOT_DONT_UNDERSTAND
 
 
-def save_video(video_id, user):
+def get_random_video_response():
+    """Get a random video from the playlist with message or error message"""
+    playlist = data_manager.get_all_videos()
+    video = utils.get_random_from_playlist(playlist)
+    if video:
+        return f'{BOT.random_general_reply()} {video}'
+    return TRASH_BOT_SHIT_HIT_THE_FAN
+
+
+def save_video(text, user):
     """Save a video to the playlist"""
+    video_id = utils.match_youtube_url(text)
+    if not video_id:
+        return TRASH_BOT_NOT_FOUND_LINK
     try:
-        if not video_id:
-            return TRASH_BOT_NOT_FOUND_LINK
-        video_exist = data_manager.video_exists(video_id)
-        if video_exist['exists']:
-            return f'{random.choice(TRASH_BOT_ERROR_REPLIES)} {TRASH_BOT_ALREADY_IN_PLAYLIST} video id:{video_id}'
+        if data_manager.video_exists(video_id)['exists']:
+            return f'{BOT.random_error_reply()} {TRASH_BOT_ALREADY_IN_PLAYLIST} video id:{video_id}'
         data_manager.put_video_in_table(video_id, user)
-        return f'{random.choice(TRASH_BOT_SUCCESS_REPLIES)} {TRASH_BOT_VIDEO_ADDED}'
+        return f'{BOT.random_success_reply()} {TRASH_BOT_VIDEO_ADDED}'
     except Exception as e:
         logging.error(e)
         return TRASH_BOT_SHIT_HIT_THE_FAN
 
 
-def get_random_from_playlist(playlist):
-    """Get a random trash video"""
-    random_number = random.randint(0, len(playlist) - 1)
-    video_id = playlist[random_number]['video_id']
-    return f'https://www.youtube.com/watch?v={video_id}'
-
-
 # <------------------------message------------------------------->
 @app.message("hello")
-def handle_hello(message, say):
+def handle_hello(message, ack, say, logger):
     """Handle hello message"""
     user = message.get("user", "")
-    text = message.get("text", "")
-    if utils.user_is_bot_or_app_mention(user, text, BOT_ID):
+    ack()
+    logger.info(message)
+    if utils.user_is_bot(user, BOT_ID):
         return
-    say(f"Hello! <@{user}> :wave:")
+    say(BOT.say_hi_to(user))
 
 
+def return_random_video(video, say):
+    say(BOT.random_general_reply())
+    say(video)
+    say(TRASH_BOT_RATE)
+    
+    
 # <------------------------events------------------------------->
 @app.event("message")
-def handle_message_events(body, event, logger):
+def handle_message_events(message, ack, event, logger):
     """Handle message events"""
     text = event.get("text", "")
-    user = event.get("user", "")
-    if utils.user_is_bot_or_app_mention(user, text, BOT_ID):
+    user = message.get("user", "")
+    logger.info(message)
+    ack()
+    if utils.user_is_bot(user, BOT_ID):
         return
-    logger.info(body)
     match = utils.match_youtube_url(text)
     if match:
+        logger.info(f"Matched youtube link: {match}")
         LAST_YOUTUBE_LINK_DETAILS['video_id'] = match
         LAST_YOUTUBE_LINK_DETAILS['message'] = text
         LAST_YOUTUBE_LINK_DETAILS['user'] = user
 
 
 @app.event("app_mention")
-def handle_bot_mention(body, event, say, logger):
+def handle_bot_mention(body, ack, event, say, logger):
     """Handle bot mention"""
     logger.info(body)
+    ack()
     text = event.get("text", "")
     user = event.get("user", "")
-    channel = event.get("channel", "")
-    if utils.user_is_bot_or_app_mention(user, text, BOT_ID):
-        return
     message = handle_event_text(text, user)
     say(message)
 
@@ -124,7 +131,7 @@ def ask_for_introduction(event, say, logger):
     logger.info(event)
     text = event.get("text", "")
     user = event.get("user", "")
-    if utils.user_is_bot_or_app_mention(user, text, BOT_ID):
+    if utils.user_is_bot(user, BOT_ID):
         return
     text = f"Welcome to the team, <@{user}>! 🎉 You can introduce yourself in this channel with a greeting trash video."
     say(text=text)
@@ -155,14 +162,11 @@ def handle_list_command(ack, body, respond, logger):
 def handle_add_command(ack, body, respond, logger):
     """Responds with the bot usage helper message"""
     logger.info(body)
-    link = body.get("text", "")
+    text = body.get("text", "")
     user_id = body.get("user_id", "")
-    video_id = utils.match_youtube_url(link)
     ack()
-    if video_id:
-        response = save_video(video_id, user_id)
-        respond(response)
-    respond(random.choice(TRASH_BOT_ERROR_REPLIES))
+    response = save_video(text, user_id)
+    respond(response)
 
 
 # <------------------------shortcuts------------------------------->
@@ -173,12 +177,9 @@ def handle_shortcut_save(ack, body, respond, logger):
     text = message.get("text", "")
     user = body.get("user", "")
     user_id = user.get("id", "")
-    video_id = utils.match_youtube_url(text)
     ack()
-    if video_id:
-        response = save_video(video_id, user_id)
-        respond(response)
-    respond(random.choice(TRASH_BOT_ERROR_REPLIES))
+    response = save_video(text, user_id)
+    respond(response)
 
 
 @app.error

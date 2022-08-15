@@ -1,3 +1,4 @@
+import logging
 import re
 from datetime import datetime
 
@@ -10,7 +11,9 @@ def make_new_timestamp():
 
 def user_is_bot_or_app_mention(user, text, bot_id):
     """Check if the user is the bot"""
-    return user == bot_id or text.startswith(f"<@{bot_id}>")
+    user_is_bot = user == bot_id or text.startswith(f"<@{bot_id}>")
+    logging.getLogger().warning(f"user_is_bot: {user_is_bot}")
+    return user_is_bot
 
 
 def match_youtube_url(text):

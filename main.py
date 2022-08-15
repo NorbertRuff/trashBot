@@ -74,6 +74,9 @@ def get_random_from_playlist(playlist):
 def handle_hello(message, say):
     """Handle hello message"""
     user = message.get("user", "")
+    text = message.get("text", "")
+    if utils.user_is_bot_or_app_mention(user, text, BOT_ID):
+        return
     say(f"Hello! <@{user}> :wave:")
 
 
@@ -85,10 +88,9 @@ def handle_message_events(body, event, logger):
     user = event.get("user", "")
     if utils.user_is_bot_or_app_mention(user, text, BOT_ID):
         return
-    # logger.info(body)
+    logger.info(body)
     match = utils.match_youtube_url(text)
     if match:
-        print(match)
         LAST_YOUTUBE_LINK_DETAILS['video_id'] = match
         LAST_YOUTUBE_LINK_DETAILS['message'] = text
         LAST_YOUTUBE_LINK_DETAILS['user'] = user
@@ -101,6 +103,8 @@ def handle_bot_mention(body, event, say, logger):
     text = event.get("text", "")
     user = event.get("user", "")
     channel = event.get("channel", "")
+    if utils.user_is_bot_or_app_mention(user, text, BOT_ID):
+        return
     message = handle_event_text(text, user)
     say(message)
 
@@ -111,7 +115,6 @@ def handle_emoji_changed_events(event, say, logger):
     logger.info(event)
     text = event.get("text", "")
     user = event.get("user", "")
-    print(event)
     say(f"Its not really my job, but you should know that an emoji has been changed :{event}:")
 
 
@@ -121,6 +124,8 @@ def ask_for_introduction(event, say, logger):
     logger.info(event)
     text = event.get("text", "")
     user = event.get("user", "")
+    if utils.user_is_bot_or_app_mention(user, text, BOT_ID):
+        return
     text = f"Welcome to the team, <@{user}>! 🎉 You can introduce yourself in this channel with a greeting trash video."
     say(text=text)
 

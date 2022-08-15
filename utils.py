@@ -19,7 +19,7 @@ def get_random_from_playlist(playlist):
     """Get a random trash video"""
     random_number = random.randint(0, len(playlist) - 1)
     video_id = playlist[random_number]['video_id']
-    return f'https://www.youtube.com/watch?v={video_id}'
+    return video_id
 
 
 def match_youtube_url(text):
@@ -28,3 +28,66 @@ def match_youtube_url(text):
     if youtube_regex_match:
         return youtube_regex_match.group(1)
     return None
+
+
+def get_rating_section(video_id):
+    """Get the rating section of a video"""
+    rate_block = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "How painful is this video? Rate it!"
+                }
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "1"
+                        },
+                        "style": "danger",
+                        "value": f"{video_id} 1"
+                    },
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "2"
+                        },
+                        "value": f"{video_id} 2"
+                    },
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "3"
+                        },
+                        "value": f"{video_id} 3"
+                    },
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "4"
+                        },
+                        "value": f"{video_id} 4"
+                    },
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "5"
+                        },
+                        "style": "primary",
+                        "value": f"{video_id} 5"
+                    }
+                ]
+            }
+        ]
+    }
+    return rate_block

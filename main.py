@@ -29,12 +29,12 @@ LAST_YOUTUBE_LINK_DETAILS = {
 }
 
 
-def handle_event_text(text, user):
+def handle_event_text(text, user, say):
     """Handle a bot commands"""
     if "help" in text.lower():
         return TRASHBOT_HELP_MSG
     if any(word in text.lower() for word in TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS):
-        return get_random_video_response()
+        return get_random_video_response(say)
     if any(word in text.lower() for word in [':point_right:']) and any(
             word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
         return save_video(text, user)
@@ -45,12 +45,14 @@ def handle_event_text(text, user):
     return TRASH_BOT_DONT_UNDERSTAND
 
 
-def get_random_video_response():
+def get_random_video_response(say):
     """Get a random video from the playlist with message or error message"""
     playlist = data_manager.get_all_videos()
-    video = utils.get_random_from_playlist(playlist)
-    if video:
-        return f'{BOT.random_general_reply()} {video}'
+    video_id = utils.get_random_from_playlist(playlist)
+    if video_id:
+        say(f'{BOT.random_general_reply()} https://www.youtube.com/watch?v={video_id}')
+        say(utils.get_rating_section(video_id))
+        return None
     return TRASH_BOT_SHIT_HIT_THE_FAN
 
 
@@ -80,12 +82,6 @@ def handle_hello(message, ack, say, logger):
         return
     say(BOT.say_hi_to(user))
 
-
-def return_random_video(video, say):
-    say(BOT.random_general_reply())
-    say(video)
-    say(TRASH_BOT_RATE)
-    
     
 # <------------------------events------------------------------->
 @app.event("message")
@@ -112,17 +108,23 @@ def handle_bot_mention(body, ack, event, say, logger):
     ack()
     text = event.get("text", "")
     user = event.get("user", "")
-    message = handle_event_text(text, user)
-    say(message)
+    message = handle_event_text(text, user, say)
+    if message:
+        say(message)
 
 
 @app.event("emoji_changed")
-def handle_emoji_changed_events(event, say, logger):
+def handle_emoji_changed_events(event, ack, say, logger):
     """Handle emoji changed events"""
     logger.info(event)
-    text = event.get("text", "")
-    user = event.get("user", "")
-    say(f"Its not really my job, but you should know that an emoji has been changed :{event}:")
+    ack()
+    name = event.get("name", "")
+    subtype = event.get("subtype", "")
+    if subtype == "add":
+        say(
+            channel=TRASH_CHANNEL_ID,
+            text=f"Its not really my job, but you should know that an emoji has been added -> :{name}:"
+        )
 
 
 @app.event("team_join")
@@ -135,6 +137,12 @@ def ask_for_introduction(event, say, logger):
         return
     text = f"Welcome to the team, <@{user}>! 🎉 You can introduce yourself in this channel with a greeting trash video."
     say(text=text)
+
+
+@app.action("block_actions")
+def handle_some_action(ack, body, logger):
+    ack()
+    logger.info(body)
 
 
 # <------------------------command------------------------------->

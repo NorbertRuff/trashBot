@@ -1,1 +1,1 @@
-web: --bind :$PORT --workers 1 --threads 2 --timeout 0 python main.py
+pbot: python main.py

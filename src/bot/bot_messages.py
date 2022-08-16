@@ -39,10 +39,11 @@ TRASH_BOT_ERROR_REPLIES = ['Error! ', 'Biip-bop-bup uh oh :robot_face: ', 'I can
                            ':no_entry: ', ':no_entry_sign: ', ':no_good: ', 'shame :no_good: ']
 
 TRASH_BOT_LOVE = ['WOW thanks :heart_eyes: I Love you', ':heart_eyes: :heart_eyes: :heart_eyes:',
-                  'finally :heart_eyes:', 'you are the best :heart_eyes:']
-TRASH_BOT_HATE = [':cry: sorry, I hate you', ':cry: Than fix me :robot-face:', ':cry: I hate you :cry:',
+                  'finally someone who loves trash :heart_eyes:', 'everyone loves me :heart_eyes:',
+                  ':heart_eyes:', 'you are the best :heart_eyes:']
+TRASH_BOT_HATE = [':cry: I\'m sorry, I hate you', ':cry: Then fix me :robot_face: ', ':cry: I hate you :cry:',
                   'Fix me very badly :cry:', 'I hate you too :heart_eyes:',
-                  'you can fix me here: https://github.com/NorbertRuff/trashBot']
+                  'You can fix me here: https://github.com/NorbertRuff/trashBot']
 
 TRASH_BOT_VIDEO_ADDED = ':white_check_mark: Video added to trash playlist'
 TRASH_BOT_DONT_UNDERSTAND = 'Huh? I did not understand that'

@@ -35,13 +35,16 @@ It can also save directly a video with an emoji command, or with slack shortcuts
 
 ## Screenshots
 
-![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot1.png?raw=true)
+![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot1.png?raw=true)
 ---
 
-![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot2.png?raw=true)
+![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot2.png?raw=true)
 ---
 
-![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot3.png?raw=true)
+![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot3.png?raw=true)
+---
+
+![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot4.png?raw=true)
 ---
 
 

@@ -1,14 +1,16 @@
-import random
 import os
+import re
+
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
-from bot import TrashBot
-from bot_messages import *
+from src.bot import *
+from src.bot.bot import TrashBot
 import logging
-import data_manager
-import utils
+
+from src.data_manager import data_manager
+from src.utils import utils
 
 load_dotenv()
 
@@ -35,8 +37,7 @@ def handle_event_text(text, user, say):
         return TRASHBOT_HELP_MSG
     if any(word in text.lower() for word in TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS):
         return get_random_video_response(say)
-    if any(word in text.lower() for word in [':point_right:']) and any(
-            word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
+    if any(word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
         return save_video(text, user)
     if "good bot" in text.lower():
         return BOT.random_love_reply()
@@ -48,10 +49,10 @@ def handle_event_text(text, user, say):
 def get_random_video_response(say):
     """Get a random video from the playlist with message or error message"""
     playlist = data_manager.get_all_videos()
-    video_id = utils.get_random_from_playlist(playlist)
-    if video_id:
-        say(f'{BOT.random_general_reply()} https://www.youtube.com/watch?v={video_id}')
-        say(utils.get_rating_section(video_id))
+    video = utils.get_random_video_from_playlist(playlist)
+    if video:
+        say(f"{BOT.random_general_reply()} video #{video['id']} https://www.youtube.com/watch?v={video['video_id']} video rating: {video['rating']} /5 ")
+        say(utils.get_rating_section(video['video_id']))
         return None
     return TRASH_BOT_SHIT_HIT_THE_FAN
 
@@ -82,7 +83,7 @@ def handle_hello(message, ack, say, logger):
         return
     say(BOT.say_hi_to(user))
 
-    
+
 # <------------------------events------------------------------->
 @app.event("message")
 def handle_message_events(message, ack, event, logger):
@@ -128,9 +129,10 @@ def handle_emoji_changed_events(event, ack, say, logger):
 
 
 @app.event("team_join")
-def ask_for_introduction(event, say, logger):
+def ask_for_introduction(event, ack, say, logger):
     """When new user joins channel asks for introduction"""
     logger.info(event)
+    ack()
     text = event.get("text", "")
     user = event.get("user", "")
     if utils.user_is_bot(user, BOT_ID):
@@ -139,10 +141,16 @@ def ask_for_introduction(event, say, logger):
     say(text=text)
 
 
-@app.action("block_actions")
-def handle_some_action(ack, body, logger):
+@app.action(re.compile("rate_video"))
+def action_button_click(body, ack, say, logger):
+    # Acknowledge the action
     ack()
-    logger.info(body)
+    logger.warning(body)
+    user = body.get("user", "")
+    user_id = body.get("user_id", "")
+    value = body['actions'][0]['value']
+    logger.warning(value)
+    # say(f"<@{body['user']['id']}> clicked the button")
 
 
 # <------------------------command------------------------------->

@@ -129,22 +129,23 @@ Add shortcut for adding videos.
 
 ## <div style="color:#f59800" align="center">---|💺Usage/Examples|---</div>
 
-Mention trashBot in a message and he can do the following:
-   
-- @TrashBot
-  'help' ->
-    trashBot will print this message
 
-- @TrashBot
-  'random' or 'surprise' or 'trash' or 'trash video' ->
-    trashBot will get a random trash for you
-   
-- @TrashBot
-  :point_up: or :point_up_2: + 'save' or 'playlist' keyword ->
-    trashBot will save the video from the previous valid youtube link to the trash playlist
-   
-- @TrashBot
-  :point_right: + 'save' or 'add' or 'add to trash' + video Url -> trashBot will save the <video Url> in this message to the trash playlist
+commands:  
+- /help - show this message  
+- /add - add a new trash video  
+- /surprise - It will get a random trash video for you **IN PROGRESS**  
+- /list - list all trash videos  
+- /delete - delete a trash video by id **IN PROGRESS**  
+- /rate - rate a trash video by id **IN PROGRESS**  
+
+It can also save a video with the shortcut you find when clicking on a message ... thingy (meatballs menu?) and selecting the save shortcut.
+
+Mention trashBot in a message and he can do the following:
+Mentions:   
+- @trashBot + 'help' ->        It will print this message  
+- @trashBot + 'list' ->        It will list all of the videos from the trash playlist  
+- @trashBot + 'random' or 'surprise' or 'trash' or 'video' ->        It will get a random trash for you  
+- @trashBot + 'save' or 'add' or 'add to trash' + <video Url> ->       It will save the <video Url> in this message to the trash playlist  
 
 
 # <div style="color:#f59800" align="center">---|✍️ Contributing|---</div>

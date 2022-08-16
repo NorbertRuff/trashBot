@@ -15,11 +15,11 @@ def user_is_bot(user, bot_id):
     return user == bot_id
 
 
-def get_random_from_playlist(playlist):
+def get_random_video_from_playlist(playlist):
     """Get a random trash video"""
     random_number = random.randint(0, len(playlist) - 1)
-    video_id = playlist[random_number]['video_id']
-    return video_id
+    video = playlist[random_number]
+    return video
 
 
 def match_youtube_url(text):
@@ -33,6 +33,7 @@ def match_youtube_url(text):
 def get_rating_section(video_id):
     """Get the rating section of a video"""
     rate_block = {
+        "text": "How painful is this video? Rate it from 1 to 5",
         "blocks": [
             {
                 "type": "section",
@@ -51,7 +52,8 @@ def get_rating_section(video_id):
                             "text": "1"
                         },
                         "style": "danger",
-                        "value": f"{video_id} 1"
+                        "value": f"{video_id} 1",
+                        "action_id": "rate_video_1",
                     },
                     {
                         "type": "button",
@@ -59,7 +61,8 @@ def get_rating_section(video_id):
                             "type": "plain_text",
                             "text": "2"
                         },
-                        "value": f"{video_id} 2"
+                        "value": f"{video_id} 2",
+                        "action_id": "rate_video_2",
                     },
                     {
                         "type": "button",
@@ -67,7 +70,8 @@ def get_rating_section(video_id):
                             "type": "plain_text",
                             "text": "3"
                         },
-                        "value": f"{video_id} 3"
+                        "value": f"{video_id} 3",
+                        "action_id": "rate_video_3",
                     },
                     {
                         "type": "button",
@@ -75,7 +79,8 @@ def get_rating_section(video_id):
                             "type": "plain_text",
                             "text": "4"
                         },
-                        "value": f"{video_id} 4"
+                        "value": f"{video_id} 4",
+                        "action_id": "rate_video_4",
                     },
                     {
                         "type": "button",
@@ -84,7 +89,8 @@ def get_rating_section(video_id):
                             "text": "5"
                         },
                         "style": "primary",
-                        "value": f"{video_id} 5"
+                        "value": f"{video_id} 5",
+                        "action_id": "rate_video_5",
                     }
                 ]
             }

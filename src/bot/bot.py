@@ -1,5 +1,7 @@
 import random
-from bot_messages import *
+
+from src.bot import *
+from src.bot.bot_messages import *
 
 
 class TrashBot:

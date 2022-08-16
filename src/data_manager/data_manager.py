@@ -1,5 +1,5 @@
-import connection
-from utils import make_new_timestamp
+from src.data_manager import connection
+from src.utils import make_new_timestamp
 
 
 @connection.connection_handler

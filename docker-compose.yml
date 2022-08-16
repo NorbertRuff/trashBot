@@ -9,4 +9,4 @@ services:
     ports:
       - ${PSQL_PORT}:5432
     volumes:
-      - ./data:/docker-entrypoint-initdb.d
+      - ./seed:/docker-entrypoint-initdb.d

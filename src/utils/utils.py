@@ -1,28 +1,29 @@
-import logging
 import re
 from datetime import datetime
+from psycopg2.extras import RealDictRow
 import random
 
 YOUTUBE_URL_REGEX = ('(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be.com\/\S*(?:watch|embed)(?:(?:(?=\/[-a-zA-Z0-9_]{11,}(?!\S))\/)|(?:\S*v=|v\/)))([-a-zA-Z0-9_]{11,})')
 
 
-def make_new_timestamp():
+def make_new_timestamp() -> datetime:
+    """Make a new timestamp"""
     return datetime.now()
 
 
-def user_is_bot(user, bot_id):
+def user_is_bot(user: str, bot_id: str) -> bool:
     """Check if the user is the bot"""
     return user == bot_id
 
 
-def get_random_video_from_playlist(playlist):
+def get_random_video_from_playlist(playlist: list) -> RealDictRow:
     """Get a random trash video"""
     random_number = random.randint(0, len(playlist) - 1)
     video = playlist[random_number]
     return video
 
 
-def match_youtube_url(text):
+def match_youtube_url(text: str) -> str or None:
     """Match a YouTube URL"""
     youtube_regex_match = re.search(YOUTUBE_URL_REGEX, text)
     if youtube_regex_match:
@@ -30,8 +31,8 @@ def match_youtube_url(text):
     return None
 
 
-def get_rating_section(video_id):
-    """Get the rating section of a video"""
+def get_rating_section(video_id: str) -> dict:
+    """Get the rating section interactive block section for a video"""
     rate_block = {
         "text": "How painful is this video? Rate it from 1 to 5",
         "blocks": [

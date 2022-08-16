@@ -1,12 +1,22 @@
 DROP TABLE IF EXISTS public.videos;
 CREATE TABLE videos
 (
-    id              serial                                    NOT NULL,
+    id              serial               PRIMARY KEY          NOT NULL,
     video_id        varchar(50)                               NOT NULL UNIQUE,
     user_id         varchar(50)                               NOT NULL,
-    rating          integer                     DEFAULT 0,
+    rating          float4                                    DEFAULT 0,
     submission_time timestamp without time zone DEFAULT now() NOT NULL
 );
+
+DROP TABLE IF EXISTS public.rating;
+CREATE TABLE rating
+(
+    id       serial                   PRIMARY KEY     NOT NULL,
+    video_id varchar(50)                              NOT NULL,
+    user_id  varchar(50)                              NOT NULL,
+    rating   integer                                  NOT NULL
+);
+
 
 INSERT INTO videos (video_id, user_id)
 VALUES ('me5rX7Y9XKU', 'U03QZB1P5NC'),

@@ -31,7 +31,7 @@ LAST_YOUTUBE_LINK_DETAILS = {
 }
 
 
-def handle_event_text(text, user, say):
+def handle_event_text(text: str, user: str, say: str) -> str:
     """Handle a bot commands"""
     if "help" in text.lower():
         return TRASHBOT_HELP_MSG
@@ -57,7 +57,7 @@ def get_random_video_response(say):
     return TRASH_BOT_SHIT_HIT_THE_FAN
 
 
-def save_video(text, user):
+def save_video(text: str, user: str) -> str:
     """Save a video to the playlist"""
     video_id = utils.match_youtube_url(text)
     if not video_id:
@@ -76,9 +76,9 @@ def save_video(text, user):
 @app.message("hello")
 def handle_hello(message, ack, say, logger):
     """Handle hello message"""
-    user = message.get("user", "")
-    ack()
     logger.info(message)
+    ack()
+    user = message.get("user", "")
     if utils.user_is_bot(user, BOT_ID):
         return
     say(BOT.say_hi_to(user))
@@ -88,10 +88,10 @@ def handle_hello(message, ack, say, logger):
 @app.event("message")
 def handle_message_events(message, ack, event, logger):
     """Handle message events"""
-    text = event.get("text", "")
-    user = message.get("user", "")
     logger.info(message)
     ack()
+    text = event.get("text", "")
+    user = message.get("user", "")
     if utils.user_is_bot(user, BOT_ID):
         return
     match = utils.match_youtube_url(text)
@@ -141,16 +141,21 @@ def ask_for_introduction(event, ack, say, logger):
     say(text=text)
 
 
+# <------------------------action------------------------------->
 @app.action(re.compile("rate_video"))
 def action_button_click(body, ack, say, logger):
     # Acknowledge the action
     ack()
-    logger.warning(body)
     user = body.get("user", "")
-    user_id = body.get("user_id", "")
+    user_id = user.get("id", "")
     value = body['actions'][0]['value']
-    logger.warning(value)
-    # say(f"<@{body['user']['id']}> clicked the button")
+    video_id = value.split(" ")[0]
+    rating = value.split(" ")[1]
+    logger.info(f"User {user_id} rated video {video_id} with {rating}")
+    if data_manager.user_already_rated(video_id, user_id)['exists']:
+        logger.info(f"User {user_id} already rated video {video_id}")
+        return
+    data_manager.insert_rating(video_id, user_id, rating)
 
 
 # <------------------------command------------------------------->
@@ -166,11 +171,11 @@ def handle_help_command(ack, body, respond, logger):
 def handle_list_command(ack, body, respond, logger):
     """Responds with the bot usage helper message"""
     logger.info(body)
+    ack()
     playlist = data_manager.get_all_videos()
     response = ""
     for video in playlist:
         response += f'#{video["id"]} -> https://www.youtube.com/watch?v={video["video_id"]}\n'
-    ack()
     respond(response)
 
 
@@ -178,9 +183,9 @@ def handle_list_command(ack, body, respond, logger):
 def handle_add_command(ack, body, respond, logger):
     """Responds with the bot usage helper message"""
     logger.info(body)
+    ack()
     text = body.get("text", "")
     user_id = body.get("user_id", "")
-    ack()
     response = save_video(text, user_id)
     respond(response)
 
@@ -189,15 +194,17 @@ def handle_add_command(ack, body, respond, logger):
 @app.shortcut("save_shortcut")
 def handle_shortcut_save(ack, body, respond, logger):
     """Save a video to the playlist"""
+    logger.info(body)
+    ack()
     message = body.get("message", "")
     text = message.get("text", "")
     user = body.get("user", "")
     user_id = user.get("id", "")
-    ack()
     response = save_video(text, user_id)
     respond(response)
 
 
+# <------------------------error------------------------------->
 @app.error
 def custom_error_handler(error, body, logger):
     """Custom error handler"""

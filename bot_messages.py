@@ -4,7 +4,7 @@ TRASHBOT_HELP_MSG = f"""
 I have some command shortcuts:
     /help - show this message
     /add - add a new trash video
-    /surprise - I will get a random trash video for you
+    /surprise - I will get a random trash video for you **IN PROGRESS**
     /list - list all trash videos
     /delete - delete a trash video by id **IN PROGRESS**
     /rate - rate a trash video by id **IN PROGRESS**

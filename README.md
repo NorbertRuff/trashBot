@@ -1,29 +1,32 @@
 ## <div style="color:#f59800" align="center">---|Trash Bot|---</div>
 ![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/logo.png?raw=true)
 
-A bot for slack to manage your trash videos!
+A handy bot for slack, to manage your trash videos!
 
-Everybody loves trash videos and most of the companies have some channel for some random bs videos.
+Everybody loves trash videos, and most of the companies have some kind of channel for random bs videos.
 
-The goal of this project was to create a slack app that can identify, and save theese videos on a youtube account playlist 
- 
-It can identify the last valid youtube from the channel messages, and save it on a youtube accounts playlist with a command.
+The goal of this project was to create a slack app that can identify, and save these videos. 
 
-It can also save directly a video with a emoji command, or fetch a random video from that playlist.
+The bot has a DB that stores the videos, and can be used to fetch a random video, save it, and delete it.
+
+It can also identify the last valid youtube from the channel messages, and save it to the trashDatabase.
+
+It can also save directly a video with an emoji command, or with slack shortcuts.
  
 # <div style="color:#f59800" align="center">---|👨‍💻 Tech Stack|---</div>
 
 **Client:** Slack
 
-**Server:** Python
+**Server:** Python with bolt
 
 
 # Packages
 
-  * Flask 2.1.3
   * Slack 
-  * slackeventsapi 
-  * google-auth
+  * psycopg2
+  * python-dotenv
+  * slack-bolt
+  * slack-sdk
 
 
 # Requirements
@@ -46,12 +49,22 @@ It can also save directly a video with a emoji command, or fetch a random video 
 
 To run this project, you will need to add the following environment variables to your .env file
 
-`SLACK_BOT_TOKEN` slack token  
-`SLACK_SIGNING_SECRET` slack secret for app signin  
-`PLAYLIST_ID` youtube playlist id   
-`SCOPE` youtube scope add access for    
-`PORT` the port that the server runs on  
+`SLACK_APP_TOKEN` - The slack app token  
+`SLACK_SIGNING_SECRET` - The slack signing secret  
+`SLACK_BOT_TOKEN` - slack bot token  
+`TRASH_CHANNEL_ID` - the channel id of the trash channel  
+`DATABASE_URL`  
+`DATABASE_SSL` - 'disable' or 'require'  
+`LOG_LEVEL`-  logging.DEBUG or logging.INFO or logging.WARNING or logging.ERROR or logging.CRITICAL
 
+for local development, you need to add the following environment variables to your .env file
+
+`PSQL_USER_NAME`  
+`PSQL_PASSWORD`  
+`PSQL_HOST`  
+`PSQL_DB_NAME`  
+`PSQL_PORT`  
+`DATABASE_SSL='disable'`  
 
 # <div style="color:#f59800" align="center">---|🕶️Run Locally|---</div>
 
@@ -67,11 +80,11 @@ Go to the project directory
   cd my-project
 ```
 
-Install pip if you don't have it yet
-
-```bash
-pip3 (sudo apt install python3-pip)
-```
+> Install pip if you don't have it yet
+> 
+> ```bash
+> pip3 (sudo apt install python3-pip)
+> ```
 
 Create a virtual environment
 
@@ -99,18 +112,20 @@ Start the server
 
 ## Usage
 
-After install you have to set up your app on slack.
+Start docker container with: 
 
-Use event endpoint. /slack/events 
+```bash
+  docker-compose up -d
+```
+This also seeds the db with some videos
+
+After install you have to set up your app on slack.
 
 Add bot to channel, set up .env file
 
-You have to use a tunnel for locally using with slack for example use Ngrok
+Add command endpoints /help /list /add
 
-```bash
-ngrok http <YOUR PORT>
-```
-
+Add shortcut for adding videos.
 
 ## <div style="color:#f59800" align="center">---|💺Usage/Examples|---</div>
 
@@ -119,15 +134,7 @@ Mention trashBot in a message and he can do the following:
 - @TrashBot
   'help' ->
     trashBot will print this message
-   
-- @TrashBot
-  'playlist' ->
-    trashBot will give you the link to the trash playlist
-   
-- @TrashBot
-  'last' ->
-    trashBot will give you the link to the last captured video
-   
+
 - @TrashBot
   'random' or 'surprise' or 'trash' or 'trash video' ->
     trashBot will get a random trash for you
@@ -138,12 +145,6 @@ Mention trashBot in a message and he can do the following:
    
 - @TrashBot
   :point_right: + 'save' or 'add' or 'add to trash' + video Url -> trashBot will save the <video Url> in this message to the trash playlist
-
-The trash playlist is here:
-   https://www.youtube.com/playlist?list=PLPZyfP4x4WDogOQik-PdSwAN4YDVbygpW
-You can check out my source code here:
-   https://github.com/NorbertRuff/trashBot
-
 
 
 # <div style="color:#f59800" align="center">---|✍️ Contributing|---</div>

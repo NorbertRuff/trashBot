@@ -120,15 +120,15 @@ def handle_message_events(message, ack, event, logger):
     user = message.get("user", "")
     if utils.user_is_bot(user, BOT_ID):
         return
-    attachment = message["message"]["attachments"][0] if "message" in message and "attachments" in message["message"] else None
-    if attachment:
-        match = utils.match_youtube_url(attachment.get("from_url", ""))
-        if match:
-            LAST_YOUTUBE_LINK_DETAILS['video_id'] = match
-            LAST_YOUTUBE_LINK_DETAILS['title'] = attachment.get("title", "")
-            LAST_YOUTUBE_LINK_DETAILS['thumb_url'] = attachment.get("thumb_url", "")
-            LAST_YOUTUBE_LINK_DETAILS['user'] = user
-            LAST_YOUTUBE_LINK_DETAILS['video_html'] = attachment.get("video_html", "")
+    # attachment = message["message"]["attachments"][0] if "message" in message and "attachments" in message["message"] else None
+    # if attachment:
+    #     match = utils.match_youtube_url(attachment.get("from_url", ""))
+    #     if match:
+    #         LAST_YOUTUBE_LINK_DETAILS['video_id'] = match
+    #         LAST_YOUTUBE_LINK_DETAILS['title'] = attachment.get("title", "")
+    #         LAST_YOUTUBE_LINK_DETAILS['thumb_url'] = attachment.get("thumb_url", "")
+    #         LAST_YOUTUBE_LINK_DETAILS['user'] = user
+    #         LAST_YOUTUBE_LINK_DETAILS['video_html'] = attachment.get("video_html", "")
 
 
 @app.event("app_mention")

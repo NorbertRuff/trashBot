@@ -26,8 +26,11 @@ BOT = TrashBot(BOT_ID, BOT_NAME)
 logging.getLogger().warning(f"BOT_ID: {BOT_ID}")
 
 LAST_YOUTUBE_LINK_DETAILS = {
-    'message': None,
+    'title': None,
+    'thumb_url': None,
     'video_id': None,
+    'video_html': None,
+    'user': None,
 }
 
 
@@ -43,6 +46,8 @@ def handle_event_text(text: str, user: str, say: str) -> str:
         return BOT.random_love_reply()
     if "bad bot" in text.lower():
         return BOT.random_hate_reply()
+    if "source code" in text.lower():
+        return 'https://github.com/NorbertRuff/trashBot'
     return TRASH_BOT_DONT_UNDERSTAND
 
 
@@ -84,22 +89,46 @@ def handle_hello(message, ack, say, logger):
     say(BOT.say_hi_to(user))
 
 
+@app.message("good bot")
+def handle_bot_love(message, ack, say, logger):
+    """Handle hello message"""
+    logger.info(message)
+    ack()
+    user = message.get("user", "")
+    if utils.user_is_bot(user, BOT_ID):
+        return
+    say(BOT.random_love_reply())
+
+
+@app.message("bad bot")
+def handle_bot_hate(message, ack, say, logger):
+    """Handle hello message"""
+    logger.info(message)
+    ack()
+    user = message.get("user", "")
+    if utils.user_is_bot(user, BOT_ID):
+        return
+    say(BOT.random_hate_reply())
+
+
 # <------------------------events------------------------------->
 @app.event("message")
 def handle_message_events(message, ack, event, logger):
     """Handle message events"""
     logger.info(message)
     ack()
-    text = event.get("text", "")
     user = message.get("user", "")
     if utils.user_is_bot(user, BOT_ID):
         return
-    match = utils.match_youtube_url(text)
-    if match:
-        logger.info(f"Matched youtube link: {match}")
-        LAST_YOUTUBE_LINK_DETAILS['video_id'] = match
-        LAST_YOUTUBE_LINK_DETAILS['message'] = text
-        LAST_YOUTUBE_LINK_DETAILS['user'] = user
+    attachment = message["message"]["attachments"][0] if "message" in message and "attachments" in message["message"] else None
+    if attachment:
+        match = utils.match_youtube_url(attachment.get("from_url", ""))
+        if match:
+            LAST_YOUTUBE_LINK_DETAILS['video_id'] = match
+            LAST_YOUTUBE_LINK_DETAILS['title'] = attachment.get("title", "")
+            LAST_YOUTUBE_LINK_DETAILS['thumb_url'] = attachment.get("thumb_url", "")
+            LAST_YOUTUBE_LINK_DETAILS['user'] = user
+            LAST_YOUTUBE_LINK_DETAILS['video_html'] = attachment.get("video_html", "")
 
 
 @app.event("app_mention")

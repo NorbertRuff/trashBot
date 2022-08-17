@@ -41,7 +41,7 @@ TRASH_BOT_ERROR_REPLIES = ['Error! ', 'Biip-bop-bup uh oh :robot_face: ', 'I can
 TRASH_BOT_LOVE = ['WOW thanks :heart_eyes: I Love you', ':heart_eyes: :heart_eyes: :heart_eyes:',
                   'finally someone who loves trash :heart_eyes:', 'everyone loves me :heart_eyes:',
                   ':heart_eyes:', 'you are the best :heart_eyes:']
-TRASH_BOT_HATE = [':cry: I\'m sorry, I hate you', ':cry: Then fix me :robot_face: ', ':cry: I hate you :cry:',
+TRASH_BOT_HATE = [':cry: I\'m sorry, I hate you', ':cry: Well then fix me :robot_face: ', ':cry: I hate you :cry:',
                   'Fix me very badly :cry:', 'I hate you too :heart_eyes:',
                   'You can fix me here: https://github.com/NorbertRuff/trashBot']
 

@@ -51,6 +51,15 @@ def handle_event_text(text: str, user: str, say: str) -> str:
     return TRASH_BOT_DONT_UNDERSTAND
 
 
+def get_random_video() -> str or None:
+    """Get a random video id from the playlist"""
+    playlist = data_manager.get_all_videos()
+    video = utils.get_random_video_from_playlist(playlist)
+    if video:
+        return f"video #{video['id']} https://www.youtube.com/watch?v={video['video_id']} video rating: {video['rating']} /5 "
+    return None
+
+
 def get_random_video_response(say):
     """Get a random video from the playlist with message or error message"""
     playlist = data_manager.get_all_videos()
@@ -167,7 +176,7 @@ def ask_for_introduction(event, ack, say, logger):
     if utils.user_is_bot(user, BOT_ID):
         return
     text = f"Welcome to the team, <@{user}>! 🎉 You can introduce yourself in this channel with a greeting trash video."
-    say(text=text)
+    say(channel=TRASH_CHANNEL_ID, text=text)
 
 
 # <------------------------action------------------------------->
@@ -217,6 +226,55 @@ def handle_add_command(ack, body, respond, logger):
     user_id = body.get("user_id", "")
     response = save_video(text, user_id)
     respond(response)
+
+
+@app.command("/send-to-channel")
+def handle_private_video_send(client, ack, body, respond, logger):
+    """Sends a random video to the channel with message and mentions"""
+    logger.info(body)
+    ack()
+    text = body.get("text", "")
+    user_id = body.get("user_id", "")
+    receiver = text.split("/")[0] if "/" in text else text
+    message = text.split("/")[1] if "/" in text else None
+    video_response = get_random_video()
+    if not video_response:
+        return respond(BOT.random_error_reply())
+    if not message:
+        reply_text = BOT.get_reply_text(receiver, user_id)
+        text = reply_text+video_response
+    else:
+        reply_text = BOT.get_reply_text_with_message(receiver, user_id, message)
+        text = reply_text+video_response
+    client.chat_postMessage(channel=TRASH_CHANNEL_ID, text=text)
+
+
+@app.command("/send-to-user")
+def handle_private_video_send(client, ack, body, respond, logger):
+    """Send a random video to a user with message and mentions"""
+    ack()
+    text = body.get("text", "")
+    user_id = body.get("user_id", "")
+    receiver = text.split("/")[0] if "/" in text else text
+    message = text.split("/")[1] if "/" in text else None
+    recipient = receiver.split("|")[0][2:] if "|" in receiver else receiver
+    dm_channel = client.conversations_open(users=recipient)
+    logger.warning(dm_channel)
+    if dm_channel:
+        channel_id = dm_channel.get("channel", {}).get("id", "")
+        video_response = get_random_video()
+        if not video_response:
+            return respond(BOT.random_error_reply())
+        if not message:
+            reply_text = BOT.get_reply_text(receiver, user_id)
+            text = reply_text+video_response
+        else:
+            reply_text = BOT.get_reply_text_with_message(receiver, user_id, message)
+            text = reply_text+video_response
+        client.chat_postMessage(channel=channel_id, text=text)
+        respond(BOT.random_success_reply())
+    else:
+        respond(BOT.random_error_reply())
 
 
 # <------------------------shortcuts------------------------------->

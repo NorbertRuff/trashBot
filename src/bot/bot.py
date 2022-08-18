@@ -33,6 +33,14 @@ class TrashBot:
         """TrashBot random love reply :return: str"""
         return random.choice(TRASH_BOT_LOVE)
 
+    def get_reply_text(self, receiver: str, user_id: str) -> str:
+        """TrashBot random love reply :return: str"""
+        return f"Hey {receiver}! <@{user_id}> just sent random video for you!\n"
+
+    def get_reply_text_with_message(self, receiver: str, user_id: str, message: str) -> str:
+        """TrashBot random love reply :return: str"""
+        return f"Hey {receiver}! <@{user_id}> just sent random video for you! \n\nMessage: \"{message}\".\n\n"
+
     def help(self) -> str:
         """TrashBot help message :return: str"""
         return TRASHBOT_HELP_MSG

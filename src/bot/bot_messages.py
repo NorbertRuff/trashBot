@@ -45,6 +45,8 @@ TRASH_BOT_HATE = [':cry: I\'m sorry, I hate you', ':cry: Well then fix me :robot
                   'Fix me very badly :cry:', 'I hate you too :heart_eyes:',
                   'You can fix me here: https://github.com/NorbertRuff/trashBot']
 
+
+TRASH_BOT_MESSAGE = ['add', 'add to playlist', 'add to trash']
 TRASH_BOT_VIDEO_ADDED = ':white_check_mark: Video added to trash playlist'
 TRASH_BOT_DONT_UNDERSTAND = 'Huh? I did not understand that'
 TRASH_BOT_NOT_FOUND_LINK = 'I could not find a link in this or in the previous message. Please use the command with /add <url>.'

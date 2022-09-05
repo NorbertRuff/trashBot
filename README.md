@@ -136,7 +136,7 @@ Add shortcut for adding videos.
 commands:  
 - /help - show this message  
 - /add - add a new trash video  
-- /surprise - It will get a random trash video for you **IN PROGRESS**  
+- /surprise - It will get a random trash video and posts it in the channel  
 - /list - list all trash videos  
 - /delete - delete a trash video by id **IN PROGRESS**  
 - /rate - rate a trash video by id **IN PROGRESS**  

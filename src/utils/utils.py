@@ -5,6 +5,7 @@ import random
 
 from src import utils, data_manager
 from src.bot import TrashBot
+from src.utils import blocks
 
 YOUTUBE_URL_REGEX = ('(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be.com\/\S*(?:watch|embed)(?:(?:(?=\/[-a-zA-Z0-9_]{11,}(?!\S))\/)|(?:\S*v=|v\/)))([-a-zA-Z0-9_]{11,})')
 
@@ -32,7 +33,7 @@ def get_random_video_response(say, bot: TrashBot) -> str or None:
     video = utils.get_random_video_from_playlist(playlist)
     if video:
         say(f"{bot.random_general_reply()} video #{video['id']} https://www.youtube.com/watch?v={video['video_id']} video rating: {video['rating']} /5 ")
-        say(utils.get_rating_section(video['video_id']))
+        say(blocks.get_rating_section(video['video_id']))
         return None
     return bot.general_error_reply()
 
@@ -50,72 +51,3 @@ def match_youtube_url(text: str) -> str or None:
     if youtube_regex_match:
         return youtube_regex_match.group(1)
     return None
-
-
-def get_rating_section(video_id: str) -> dict:
-    """Get the rating section interactive block section for a video"""
-    rate_block = {
-        "text": "How painful is this video? Rate it from 1 to 5",
-        "blocks": [
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "How painful is this video? Rate it!"
-                }
-            },
-            {
-                "type": "actions",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "1"
-                        },
-                        "style": "danger",
-                        "value": f"{video_id} 1",
-                        "action_id": "rate_video_1",
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "2"
-                        },
-                        "value": f"{video_id} 2",
-                        "action_id": "rate_video_2",
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "3"
-                        },
-                        "value": f"{video_id} 3",
-                        "action_id": "rate_video_3",
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "4"
-                        },
-                        "value": f"{video_id} 4",
-                        "action_id": "rate_video_4",
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "5"
-                        },
-                        "style": "primary",
-                        "value": f"{video_id} 5",
-                        "action_id": "rate_video_5",
-                    }
-                ]
-            }
-        ]
-    }
-    return rate_block

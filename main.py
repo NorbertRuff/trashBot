@@ -10,7 +10,8 @@ from src.bot.bot import TrashBot
 import logging
 
 from src.data_manager import data_manager
-from src.utils import utils
+from src.utils import utils, blocks
+
 load_dotenv()
 
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
@@ -137,6 +138,38 @@ def handle_emoji_changed_events(event, ack, say, logger):
         )
 
 
+@app.event("team_join")
+def handle_team_join_events(event, ack, say, logger):
+    """Handle team join events"""
+    logger.info(event)
+    ack()
+    user = event.get("user", "").get("id", "")
+    channel = event.get("channel", "")
+    if not user or not channel == TRASH_CHANNEL_ID:
+        return
+    if utils.user_is_bot(user, BOT_ID):
+        return
+    text = BOT.ask_for_introduction(user)
+    say(channel=TRASH_CHANNEL_ID, text=text)
+
+
+@app.event("app_home_opened")
+def update_home_tab(client, event, ack, logger):
+    logger.info(event)
+    ack()
+    user_id = event["user"]
+    try:
+        client.views_publish(
+            user_id=user_id,
+            view={
+                "type": "home",
+                "blocks": blocks.get_home_view_blocks(user_id)
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error publishing view to Home Tab: {e}")
+
+
 # <------------------------action------------------------------->
 @app.action(re.compile("rate_video"))
 def action_button_click(body, ack, say, logger):
@@ -201,10 +234,10 @@ def handle_private_video_send(client, ack, body, respond, logger):
         return respond(BOT.random_error_reply())
     if not message:
         reply_text = BOT.get_reply_text(receiver, user_id)
-        text = reply_text+video_response
+        text = reply_text + video_response
     else:
         reply_text = BOT.get_reply_text_with_message(receiver, user_id, message)
-        text = reply_text+video_response
+        text = reply_text + video_response
     client.chat_postMessage(channel=TRASH_CHANNEL_ID, text=text)
 
 
@@ -227,10 +260,10 @@ def handle_private_video_send(client, ack, body, respond, logger):
             return respond(BOT.random_error_reply())
         if not message:
             reply_text = BOT.get_reply_text(receiver, user_id)
-            text = reply_text+video_response
+            text = reply_text + video_response
         else:
             reply_text = BOT.get_reply_text_with_message(receiver, user_id, message)
-            text = reply_text+video_response
+            text = reply_text + video_response
         client.chat_postMessage(channel=channel_id, text=text)
         respond(BOT.random_success_reply())
     else:
@@ -251,7 +284,19 @@ def handle_surprise_command(say, ack, body, respond, logger):
     else:
         text = f"<@{user_id}> asked for a random video. {BOT.random_general_reply()} \n {video_response}"
     say(channel=TRASH_CHANNEL_ID, text=text)
-    say(utils.get_rating_section(video_id))
+    say(blocks.get_rating_section(video_id))
+
+
+@app.command("/message-to-channel")
+def handle_message_to_channel_command(say, ack, body, respond, logger):
+    """Sends a message to the channel"""
+    ack()
+    text = body.get("text", "")
+    if not text:
+        respond(BOT.random_error_reply())
+    else:
+        text = text
+    say(channel=TRASH_CHANNEL_ID, text=text)
 
 
 # <------------------------shortcuts------------------------------->

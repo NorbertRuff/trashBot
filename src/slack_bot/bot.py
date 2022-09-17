@@ -1,13 +1,40 @@
 import random
 
-from src.bot import *
-from src.bot.bot_messages import *
+from .bot_messages import TRASHBOT_HELP_MSG, TRASH_BOT_EMOJI_REPLIES, TRASH_BOT_LOVE, TRASH_BOT_HATE, \
+    TRASH_BOT_SHIT_HIT_THE_FAN, TRASH_BOT_ERROR_REPLIES, TRASH_BOT_SUCCESS_REPLIES, TRASH_BOT_GENERAL_REPLIES
 
 
 class TrashBot:
-    def __init__(self, bot_id, name):
-        self.bot_id: bot_id
-        self.name: name
+    def __init__(self, bot_id, name, channel_id):
+        self.bot_id = bot_id
+        self.name = name
+        self.channel_id = channel_id
+
+    def __str__(self):
+        return f"TrashBot: {self.name} with id: {self.bot_id}"
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __eq__(self, other):
+        return self.bot_id == other.bot_id
+
+    def __hash__(self):
+        return hash(self.bot_id)
+
+    def get_name(self) -> str:
+        """TrashBot name :return: str"""
+        return self.name
+
+    def get_id(self) -> str:
+        """TrashBot id :return: str"""
+        return self.bot_id
+
+    def set_id(self, bot_id: str):
+        self.bot_id = bot_id
+
+    def set_name(self, name: str):
+        self.name = name
 
     def say_hi_to(self, user: object) -> str:
         """Say hi to user :return: str"""

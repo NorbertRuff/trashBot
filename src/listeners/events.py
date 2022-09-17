@@ -1,0 +1,100 @@
+import logging
+
+from slack_bolt import App, Ack, Say
+
+from src import utils
+from src.slack_bot import TrashBot, TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS, TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS, \
+    TRASH_BOT_DONT_UNDERSTAND
+from src.utils import blocks, save_video
+
+
+# # <------------------------events------------------------------->
+class EventListener:
+    def __init__(self, bolt_app: App, bot: TrashBot, trash_channel_id: str):
+        self.app = bolt_app
+        self.bot = bot
+        self.trash_channel_id = trash_channel_id
+        self.app.event("message")(self.handle_message_events)
+        self.app.event("app_mention")(self.handle_bot_mention)
+        self.app.event("emoji_changed")(self.handle_emoji_changed_events)
+        self.app.event("team_join")(self.handle_team_join_events)
+        self.app.event("app_home_opened")(self.handle_app_home_open_event)
+
+    def handle_message_events(self, message: dict, event: dict, say: Say, ack: Ack):
+        """Handle message events"""
+        ack()
+        subtype = message.get("subtype", "")
+        channel = message.get("channel", "")
+        user = event.get("user", "")
+        if not channel == self.trash_channel_id:
+            return
+        if utils.user_is_bot(user, self.bot.bot_id):
+            return
+        if not user:
+            return
+        if subtype == "channel_join":
+            text = self.bot.ask_for_introduction(user)
+            say(channel=self.trash_channel_id, text=text)
+
+    def handle_bot_mention(self, body: dict, event: dict, say: Say, ack: Ack, logger: logging.Logger):
+        """Handle slackBot mention"""
+        logger.info(body)
+        ack()
+        text = event.get("text", "")
+        user = event.get("user", "")
+        message = self.handle_event_text(text, user, say)
+        if message:
+            say(message)
+
+    def handle_emoji_changed_events(self, event: dict, say: Say, ack: Ack, logger: logging.Logger):
+        """Handle emoji changed events"""
+        logger.info(event)
+        ack()
+        emoji_name = event.get("name", "")
+        subtype = event.get("subtype", "")
+        if subtype == "add":
+            say(
+                channel=self.trash_channel_id,
+                text=self.bot.get_emoji_event_response(emoji_name)
+            )
+
+    def handle_team_join_events(self, event: dict, say: Say, ack: Ack, logger: logging.Logger):
+        """Handle team join events"""
+        logger.info(event)
+        ack()
+        user = event.get("user", "").get("id", "")
+        channel = event.get("channel", "")
+        if not user or not channel == self.trash_channel_id:
+            return
+        if utils.user_is_bot(user, self.bot.bot_id):
+            return
+        text = self.bot.ask_for_introduction(user)
+        say(channel=self.trash_channel_id, text=text)
+
+    def handle_app_home_open_event(self, event: dict, client, ack: Ack, logger: logging.Logger):
+        logger.info(event)
+        ack()
+        user_id = event.get("user")
+        try:
+            client.views_publish(
+                user_id=user_id,
+                view=blocks.get_home_view_blocks(user_id)
+            )
+        except Exception as e:
+            logger.error(f"Error publishing view to Home Tab: {e}")
+
+    def handle_event_text(self, text: str, user: str, say: Say) -> str:
+        """Handle a slackBot commands"""
+        if "help" in text.lower():
+            return self.bot.help()
+        if any(word in text.lower() for word in TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS):
+            return utils.get_random_video_response(say, self.bot)
+        if any(word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
+            return save_video(text, user)
+        if "good slackBot" in text.lower():
+            return self.bot.random_love_reply()
+        if "bad slackBot" in text.lower():
+            return self.bot.random_hate_reply()
+        if "source code" in text.lower():
+            return 'https://github.com/NorbertRuff/trashBot'
+        return TRASH_BOT_DONT_UNDERSTAND

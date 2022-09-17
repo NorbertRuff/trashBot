@@ -1,13 +1,16 @@
+import logging
+import random
 import re
 from datetime import datetime
+
 from psycopg2.extras import RealDictRow
-import random
 
 from src import utils, data_manager
-from src.bot import TrashBot
+from src.slack_bot import TrashBot, TRASH_BOT_NOT_FOUND_LINK, TRASH_BOT_ALREADY_IN_PLAYLIST, TRASH_BOT_VIDEO_ADDED
 from src.utils import blocks
 
-YOUTUBE_URL_REGEX = ('(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be.com\/\S*(?:watch|embed)(?:(?:(?=\/[-a-zA-Z0-9_]{11,}(?!\S))\/)|(?:\S*v=|v\/)))([-a-zA-Z0-9_]{11,})')
+YOUTUBE_URL_REGEX = (
+    '(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be.com\/\S*(?:watch|embed)(?:(?:(?=\/[-a-zA-Z0-9_]{11,}(?!\S))\/)|(?:\S*v=|v\/)))([-a-zA-Z0-9_]{11,})')
 
 
 def make_new_timestamp() -> datetime:
@@ -16,7 +19,7 @@ def make_new_timestamp() -> datetime:
 
 
 def user_is_bot(user: str, bot_id: str) -> bool:
-    """Check if the user is the bot"""
+    """Check if the user is the slackBot"""
     return user == bot_id
 
 
@@ -25,6 +28,21 @@ def get_random_video_from_db() -> str or None:
     playlist = data_manager.get_all_videos()
     video = utils.get_random_video_from_playlist(playlist)
     return video if video else None
+
+
+def save_video(text: str, user: str, bot: TrashBot) -> str:
+    """Save a video to the playlist"""
+    video_id = utils.match_youtube_url(text)
+    if not video_id:
+        return TRASH_BOT_NOT_FOUND_LINK
+    try:
+        if data_manager.video_exists(video_id)['exists']:
+            return f'{bot.random_error_reply()} {TRASH_BOT_ALREADY_IN_PLAYLIST} video id:{video_id}'
+        data_manager.put_video_in_table(video_id, user)
+        return f'{bot.random_success_reply()} {TRASH_BOT_VIDEO_ADDED}'
+    except Exception as e:
+        logging.error(e)
+        return bot.general_error_reply()
 
 
 def get_random_video_response(say, bot: TrashBot) -> str or None:

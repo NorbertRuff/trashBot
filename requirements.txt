@@ -6,9 +6,9 @@ pathspec==0.10.1
 platformdirs==2.5.2
 psycopg2-binary==2.9.3
 pydantic==1.10.2
-python-dotenv==0.20.0
+python-dotenv==0.21.0
 slack-bolt==1.14.3
-slack-sdk==3.18.1
+slack-sdk==3.18.3
 slackblocks==0.2.5
 tomli==2.0.1
 typing-extensions==4.3.0

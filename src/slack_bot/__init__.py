@@ -1,2 +1,2 @@
-from .bot import *
+from .bot import TrashBot
 from .bot_messages import *

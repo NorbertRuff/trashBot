@@ -2,7 +2,7 @@ import os
 import re
 
 from dotenv import load_dotenv
-from slack_bolt import App
+from slack_bolt import *
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 from src.bot import *
@@ -26,7 +26,7 @@ BOT = TrashBot(BOT_ID, BOT_NAME)
 logging.getLogger().warning(f"BOT_ID: {BOT_ID}")
 
 
-def handle_event_text(text: str, user: str, say: str) -> str:
+def handle_event_text(text: str, user: str, say: Say) -> str:
     """Handle a bot commands"""
     if "help" in text.lower():
         return BOT.help()
@@ -60,7 +60,7 @@ def save_video(text: str, user: str) -> str:
 
 # <------------------------message------------------------------->
 @app.message("hello")
-def handle_hello(message, ack, say, logger):
+def handle_hello(message: dict, say: Say, ack: Ack, logger: logging.Logger):
     """Handle hello message"""
     logger.info(message)
     ack()
@@ -71,7 +71,7 @@ def handle_hello(message, ack, say, logger):
 
 
 @app.message("good bot")
-def handle_bot_love(message, ack, say, logger):
+def handle_bot_love(message: dict, say: Say, ack: Ack, logger: logging.Logger):
     """Handle hello message"""
     logger.info(message)
     ack()
@@ -82,7 +82,7 @@ def handle_bot_love(message, ack, say, logger):
 
 
 @app.message("bad bot")
-def handle_bot_hate(message, ack, say, logger):
+def handle_bot_hate(message: dict, say: Say, ack: Ack, logger: logging.Logger):
     """Handle hello message"""
     logger.info(message)
     ack()
@@ -94,9 +94,8 @@ def handle_bot_hate(message, ack, say, logger):
 
 # <------------------------events------------------------------->
 @app.event("message")
-def handle_message_events(message, ack, event, logger, say):
+def handle_message_events(message: dict, event: dict, say: Say, ack: Ack):
     """Handle message events"""
-    logger.info(message)
     ack()
     subtype = message.get("subtype", "")
     channel = message.get("channel", "")
@@ -113,7 +112,7 @@ def handle_message_events(message, ack, event, logger, say):
 
 
 @app.event("app_mention")
-def handle_bot_mention(body, ack, event, say, logger):
+def handle_bot_mention(body: dict, event: dict, say: Say, ack: Ack, logger: logging.Logger):
     """Handle bot mention"""
     logger.info(body)
     ack()
@@ -125,7 +124,7 @@ def handle_bot_mention(body, ack, event, say, logger):
 
 
 @app.event("emoji_changed")
-def handle_emoji_changed_events(event, ack, say, logger):
+def handle_emoji_changed_events(event: dict, say: Say, ack: Ack, logger: logging.Logger):
     """Handle emoji changed events"""
     logger.info(event)
     ack()
@@ -139,7 +138,7 @@ def handle_emoji_changed_events(event, ack, say, logger):
 
 
 @app.event("team_join")
-def handle_team_join_events(event, ack, say, logger):
+def handle_team_join_events(event: dict, say: Say, ack: Ack, logger: logging.Logger):
     """Handle team join events"""
     logger.info(event)
     ack()
@@ -154,17 +153,14 @@ def handle_team_join_events(event, ack, say, logger):
 
 
 @app.event("app_home_opened")
-def update_home_tab(client, event, ack, logger):
+def update_home_tab(event: dict, client, ack: Ack, logger: logging.Logger):
     logger.info(event)
     ack()
-    user_id = event["user"]
+    user_id = event.get("user")
     try:
         client.views_publish(
             user_id=user_id,
-            view={
-                "type": "home",
-                "blocks": blocks.get_home_view_blocks(user_id)
-            }
+            view=blocks.get_home_view_blocks(user_id)
         )
     except Exception as e:
         logger.error(f"Error publishing view to Home Tab: {e}")
@@ -172,11 +168,11 @@ def update_home_tab(client, event, ack, logger):
 
 # <------------------------action------------------------------->
 @app.action(re.compile("rate_video"))
-def action_button_click(body, ack, say, logger):
+def action_button_click(body: dict, ack: Ack, logger: logging.Logger):
     # Acknowledge the action
+    logger.info(body)
     ack()
-    user = body.get("user", "")
-    user_id = user.get("id", "")
+    user_id = body.get("user", "").get("id", "")
     value = body['actions'][0]['value'] if 'actions' in body else None
     video_id = value.split(" ")[0]
     rating = value.split(" ")[1]
@@ -187,9 +183,64 @@ def action_button_click(body, ack, say, logger):
     data_manager.insert_rating(video_id, user_id, rating)
 
 
+# <------------------------modals------------------------------->
+@app.action("open_send_trash_to_user_modal")
+def handle_open_send_trash_to_user_modal(body: dict, client: App.client, ack: Ack, logger: logging.Logger):
+    logger.info(body)
+    ack()
+    try:
+        client.views_open(
+            trigger_id=body["trigger_id"],
+            view=blocks.get_send_trash_to_user_modal()
+        )
+    except Exception as e:
+        logger.error(f"Error publishing view to Home Tab: {e}")
+
+
+@app.action("open_send_trash_to_channel_modal")
+def handle_open_send_trash_to_user_modal(body: dict, client: App.client, ack: Ack, logger: logging.Logger):
+    logger.info(body)
+    ack()
+    try:
+        client.views_open(
+            trigger_id=body["trigger_id"],
+            view=blocks.get_send_trash_to_channel_modal()
+        )
+    except Exception as e:
+        logger.error(f"Error publishing view to Home Tab: {e}")
+
+
+@app.view("send_user_trash_modal")
+def handle_send_user_video_modal_submission(payload: dict, body: dict, client, ack: Ack, logger: logging.Logger):
+    logger.info(body)
+    ack()
+    user_id = body.get("user", "").get("id", "")
+    values = payload.get("state", "").get("values", "")
+    message_to_send = values.get("message_to_send", "").get("message_to_send", "").get("value", "")
+    selected_user = values.get("selected_user", "").get("selected_user", "").get("value", "")
+    logger.info(f"User {user_id} sent message {message_to_send} to user {selected_user}")
+    client.chat_postMessage(
+        channel=TRASH_CHANNEL_ID,
+        text=f"User {user_id} sent message {message_to_send} to user {selected_user}"
+    )
+
+
+@app.view("send_channel_trash_modal")
+def handle_send_user_video_modal_submission(payload: dict, body: dict, client, ack: Ack, logger: logging.Logger):
+    logger.info(body)
+    ack()
+    user_id = body.get("user", "").get("id", "")
+    values = payload.get("state", "").get("values", "")
+    message_to_send = values.get("message_to_send", "").get("message_to_send", "").get("value", "")
+    client.chat_postMessage(
+        channel=TRASH_CHANNEL_ID,
+        text=f"User {user_id} sent message {message_to_send}"
+    )
+
+
 # <------------------------command------------------------------->
 @app.command("/help")
-def handle_help_command(ack, body, respond, logger):
+def handle_help_command(body: dict, respond: Respond, ack: Ack, logger: logging.Logger):
     """Responds with the bot usage helper message"""
     logger.info(body)
     ack()
@@ -197,7 +248,7 @@ def handle_help_command(ack, body, respond, logger):
 
 
 @app.command("/list")
-def handle_list_command(ack, body, respond, logger):
+def handle_list_command(body: dict, respond: Respond, ack: Ack, logger: logging.Logger):
     """Responds with the bot usage helper message"""
     logger.info(body)
     ack()
@@ -209,7 +260,7 @@ def handle_list_command(ack, body, respond, logger):
 
 
 @app.command("/add")
-def handle_add_command(ack, body, respond, logger):
+def handle_add_command(body: dict, respond: Respond, ack: Ack, logger: logging.Logger):
     """Responds with the bot usage helper message"""
     logger.info(body)
     ack()
@@ -220,7 +271,7 @@ def handle_add_command(ack, body, respond, logger):
 
 
 @app.command("/send-to-channel")
-def handle_private_video_send(client, ack, body, respond, logger):
+def handle_private_video_send(body: dict, respond: Respond, client: App.client, ack: Ack, logger: logging.Logger):
     """Sends a random video to the channel with message and mentions"""
     logger.info(body)
     ack()
@@ -242,8 +293,9 @@ def handle_private_video_send(client, ack, body, respond, logger):
 
 
 @app.command("/send-to-user")
-def handle_private_video_send(client, ack, body, respond, logger):
+def handle_private_video_send(body: dict, respond: Respond, client: App.client, ack: Ack, logger: logging.Logger):
     """Send a random video to a user with message and mentions"""
+    logger.info(body)
     ack()
     text = body.get("text", "")
     user_id = body.get("user_id", "")
@@ -271,8 +323,9 @@ def handle_private_video_send(client, ack, body, respond, logger):
 
 
 @app.command("/surprise")
-def handle_surprise_command(say, ack, body, respond, logger):
+def handle_surprise_command(body: dict, respond: Respond, say: Say, ack: Ack, logger: logging.Logger):
     """Send a random video to a user with message and mentions"""
+    logger.info(body)
     ack()
     text = body.get("text", "")
     user_id = body.get("user_id", "")
@@ -284,12 +337,13 @@ def handle_surprise_command(say, ack, body, respond, logger):
     else:
         text = f"<@{user_id}> asked for a random video. {BOT.random_general_reply()} \n {video_response}"
     say(channel=TRASH_CHANNEL_ID, text=text)
-    say(blocks.get_rating_section(video_id))
+    say(channel=TRASH_CHANNEL_ID, text=blocks.get_rating_section(video_id))
 
 
 @app.command("/message-to-channel")
-def handle_message_to_channel_command(say, ack, body, respond, logger):
+def handle_message_to_channel_command(body: dict, respond: Respond, say: Say, ack: Ack, logger: logging.Logger):
     """Sends a message to the channel"""
+    logger.info(body)
     ack()
     text = body.get("text", "")
     if not text:
@@ -301,7 +355,7 @@ def handle_message_to_channel_command(say, ack, body, respond, logger):
 
 # <------------------------shortcuts------------------------------->
 @app.shortcut("save_shortcut")
-def handle_shortcut_save(ack, body, respond, logger):
+def handle_shortcut_save(body: dict, respond: Respond, ack: Ack, logger: logging.Logger):
     """Save a video to the playlist"""
     logger.info(body)
     ack()
@@ -315,7 +369,7 @@ def handle_shortcut_save(ack, body, respond, logger):
 
 # <------------------------error------------------------------->
 @app.error
-def custom_error_handler(error, body, logger):
+def custom_error_handler(error, body: dict, logger: logging.Logger):
     """Custom error handler"""
     logger.exception(f"Error: {error}")
     logger.info(f"Request body: {body}")

@@ -11,6 +11,7 @@ from blockkit import (
     PlainTextInput,
     Input,
     Header,
+    enums,
 )
 
 
@@ -22,11 +23,11 @@ def get_rating_section(video_id: str) -> dict:
             Section(text="How painful is this video? Rate it!"),
             Actions(
                 elements=[
-                    Button(text="1", style="danger", value=f"{video_id} 1", action_id="rate_video_1"),
+                    Button(text="1", style=enums.Style.danger, value=f"{video_id} 1", action_id="rate_video_1"),
                     Button(text="2", value=f"{video_id} 2", action_id="rate_video_2"),
                     Button(text="3", value=f"{video_id} 3", action_id="rate_video_3"),
                     Button(text="4", value=f"{video_id} 4", action_id="rate_video_4"),
-                    Button(text="5", style="primary", value=f"{video_id} 5", action_id="rate_video_5"),
+                    Button(text="5", style=enums.Style.primary, value=f"{video_id} 5", action_id="rate_video_5"),
                 ]
             ),
         ]

@@ -1,4 +1,4 @@
-import logging
+from logging import Logger
 
 from slack_bolt import App, Ack, Say
 
@@ -16,7 +16,7 @@ class MessageListener:
         self.app.message("good bot")(self.handle_bot_love)
         self.app.message("bad bot")(self.handle_bot_hate)
 
-    def handle_hello(self, message: dict, say: Say, ack: Ack, logger: logging.Logger):
+    def handle_hello(self, message: dict, say: Say, ack: Ack, logger: Logger):
         """Handle hello message"""
         logger.info(message)
         ack()
@@ -25,7 +25,7 @@ class MessageListener:
             return
         say(self.bot.say_hi_to(user))
 
-    def handle_bot_love(self, message: dict, say: Say, ack: Ack, logger: logging.Logger):
+    def handle_bot_love(self, message: dict, say: Say, ack: Ack, logger: Logger):
         """Handle hello message"""
         logger.info(message)
         ack()
@@ -34,7 +34,7 @@ class MessageListener:
             return
         say(self.bot.random_love_reply())
 
-    def handle_bot_hate(self, message: dict, say: Say, ack: Ack, logger: logging.Logger):
+    def handle_bot_hate(self, message: dict, say: Say, ack: Ack, logger: Logger):
         """Handle hello message"""
         logger.info(message)
         ack()

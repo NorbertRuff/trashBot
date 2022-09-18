@@ -1,7 +1,8 @@
-import logging
 import re
+from logging import Logger
 
 from slack_bolt import App, Ack
+from slack_sdk import WebClient
 
 from src import data_manager
 from src.slack_bot import TrashBot
@@ -18,7 +19,7 @@ class ActionListener:
         self.app.action("open_send_trash_to_channel_modal")(self.handle_open_send_trash_to_channel_modal)
         self.app.action("open_send_trash_to_user_modal")(self.handle_open_send_trash_to_user_modal)
 
-    def rating_button_click(self, body: dict, ack: Ack, logger: logging.Logger):
+    def rating_button_click(self, body: dict, ack: Ack, logger: Logger):
         # Acknowledge the action
         logger.info(body)
         ack()
@@ -32,7 +33,7 @@ class ActionListener:
             return
         data_manager.insert_rating(video_id, user_id, rating)
 
-    def handle_open_send_trash_to_user_modal(self, body: dict, client: App.client, ack: Ack, logger: logging.Logger):
+    def handle_open_send_trash_to_user_modal(self, body: dict, client: WebClient, ack: Ack, logger: Logger):
         logger.info(body)
         ack()
         try:
@@ -43,7 +44,7 @@ class ActionListener:
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
 
-    def handle_open_send_trash_to_channel_modal(self, body: dict, client: App.client, ack: Ack, logger: logging.Logger):
+    def handle_open_send_trash_to_channel_modal(self, body: dict, client: WebClient, ack: Ack, logger: Logger):
         logger.info(body)
         ack()
         try:

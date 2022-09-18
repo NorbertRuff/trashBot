@@ -1,6 +1,7 @@
-import logging
+from logging import Logger
 
 from slack_bolt import App, Ack, Say
+from slack_sdk import WebClient
 
 from src import utils
 from src.slack_bot import TrashBot, TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS, TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS, \
@@ -36,7 +37,7 @@ class EventListener:
             text = self.bot.ask_for_introduction(user)
             say(channel=self.trash_channel_id, text=text)
 
-    def handle_bot_mention(self, body: dict, event: dict, say: Say, ack: Ack, logger: logging.Logger):
+    def handle_bot_mention(self, body: dict, event: dict, say: Say, ack: Ack, logger: Logger):
         """Handle slackBot mention"""
         logger.info(body)
         ack()
@@ -46,7 +47,7 @@ class EventListener:
         if message:
             say(message)
 
-    def handle_emoji_changed_events(self, event: dict, say: Say, ack: Ack, logger: logging.Logger):
+    def handle_emoji_changed_events(self, event: dict, say: Say, ack: Ack, logger: Logger):
         """Handle emoji changed events"""
         logger.info(event)
         ack()
@@ -58,7 +59,7 @@ class EventListener:
                 text=self.bot.get_emoji_event_response(emoji_name)
             )
 
-    def handle_team_join_events(self, event: dict, say: Say, ack: Ack, logger: logging.Logger):
+    def handle_team_join_events(self, event: dict, say: Say, ack: Ack, logger: Logger):
         """Handle team join events"""
         logger.info(event)
         ack()
@@ -71,7 +72,7 @@ class EventListener:
         text = self.bot.ask_for_introduction(user)
         say(channel=self.trash_channel_id, text=text)
 
-    def handle_app_home_open_event(self, event: dict, client, ack: Ack, logger: logging.Logger):
+    def handle_app_home_open_event(self, event: dict, client: WebClient, ack: Ack, logger: Logger):
         logger.info(event)
         ack()
         user_id = event.get("user")
@@ -90,7 +91,7 @@ class EventListener:
         if any(word in text.lower() for word in TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS):
             return utils.get_random_video_response(say, self.bot)
         if any(word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
-            return save_video(text, user)
+            return save_video(text, user, self.bot)
         if "good slackBot" in text.lower():
             return self.bot.random_love_reply()
         if "bad slackBot" in text.lower():

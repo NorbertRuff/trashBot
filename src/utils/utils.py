@@ -4,8 +4,9 @@ import re
 from datetime import datetime
 
 from psycopg2.extras import RealDictRow
+from slack_bolt import Say
 
-from src import utils, data_manager
+from src import data_manager
 from src.slack_bot import TrashBot, TRASH_BOT_NOT_FOUND_LINK, TRASH_BOT_ALREADY_IN_PLAYLIST, TRASH_BOT_VIDEO_ADDED
 from src.utils import blocks
 
@@ -23,16 +24,16 @@ def user_is_bot(user: str, bot_id: str) -> bool:
     return user == bot_id
 
 
-def get_random_video_from_db() -> str or None:
+def get_random_video_db_row() -> str or None:
     """Get a random video id from the playlist"""
     playlist = data_manager.get_all_videos()
-    video = utils.get_random_video_from_playlist(playlist)
-    return video if video else None
+    video_db_row = get_random_video_db_row_from_playlist(playlist)
+    return video_db_row if video_db_row else None
 
 
 def save_video(text: str, user: str, bot: TrashBot) -> str:
     """Save a video to the playlist"""
-    video_id = utils.match_youtube_url(text)
+    video_id = match_youtube_url(text)
     if not video_id:
         return TRASH_BOT_NOT_FOUND_LINK
     try:
@@ -45,22 +46,21 @@ def save_video(text: str, user: str, bot: TrashBot) -> str:
         return bot.general_error_reply()
 
 
-def get_random_video_response(say, bot: TrashBot) -> str or None:
+def get_random_video_response(say: Say, bot: TrashBot) -> str or None:
     """Get a random video from the playlist with message or error message"""
-    playlist = data_manager.get_all_videos()
-    video = utils.get_random_video_from_playlist(playlist)
-    if video:
-        say(f"{bot.random_general_reply()} video #{video['id']} https://www.youtube.com/watch?v={video['video_id']} video rating: {video['rating']} /5 ")
-        say(blocks.get_rating_section(video['video_id']))
+    video_db_row = get_random_video_db_row()
+    if video_db_row:
+        say(f"{bot.random_general_reply()} video #{video_db_row['id']} https://www.youtube.com/watch?v={video_db_row['video_id']} video rating: {video_db_row['rating']} /5 ")
+        say(blocks.get_rating_section(video_db_row['video_id']))
         return None
     return bot.general_error_reply()
 
 
-def get_random_video_from_playlist(playlist: list) -> RealDictRow:
+def get_random_video_db_row_from_playlist(playlist: list) -> RealDictRow:
     """Get a random trash video"""
     random_number = random.randint(0, len(playlist) - 1)
-    video = playlist[random_number]
-    return video
+    video_db_row = playlist[random_number]
+    return video_db_row
 
 
 def match_youtube_url(text: str) -> str or None:

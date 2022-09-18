@@ -91,6 +91,3 @@ def put_video_in_table(cursor: RealDictCursor, video_id: str, user_id: str) -> N
                 VALUES (%(video_id)s, %(user_id)s, %(time)s)
                 """
     cursor.execute(query, {'video_id': video_id, 'user_id': user_id, 'time': timestamp})
-
-
-

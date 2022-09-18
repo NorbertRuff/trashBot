@@ -1,14 +1,13 @@
+import logging
 import os
-import re
 
 from dotenv import load_dotenv
 from slack_bolt import *
 from slack_bolt.adapter.socket_mode import SocketModeHandler
-import logging
 
-from src.slack_bot import TrashBot
 from src.listeners import CommandListener, EventListener, MessageListener, ViewListener, ShortcutListener, \
     ActionListener
+from src.slack_bot import TrashBot
 
 load_dotenv()
 

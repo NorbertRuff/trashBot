@@ -64,26 +64,34 @@ class TrashBot:
         """TrashBot random love reply :return: str"""
         return random.choice(TRASH_BOT_LOVE)
 
-    def get_reply_text(self, receiver: str, user_id: str) -> str:
-        """TrashBot reply without message for messaging functionality
-        :param user_id: the user who sent the message
-        :param receiver: the user who will receive the message
-        :return: str
-        """
-        return f"Hey {receiver}! <@{user_id}> just sent random video for you!\n"
-
-    def get_reply_text_with_message(self, receiver: str, user_id: str, message: str) -> str:
-        """TrashBot reply with message for messaging functionality
-        :param user_id: the user who sent the message
+    def generate_bot_post_to_channel(self, sender_user_id: str, video_db_row: dict, message=None) -> str:
+        """TrashBot post message to channel with message or without
+        :param video_db_row: video row from db
+        :param sender_user_id: the user who sent the message
         :param message: the message that the user sent
-        :param receiver: the user who will receive the message
         :return: str
         """
-        return f"Hey {receiver}! <@{user_id}> just sent random video for you! \n\nMessage: \"{message}\".\n\n"
+        video_reply_text = self.get_reply_text_from_video_row(video_db_row=video_db_row)
+        if message:
+            return f"<@{sender_user_id}> just asked for random video! \n\nMessage: \"{message}\".\n\n {video_reply_text}"
+        return f"<@{sender_user_id}> just asked for random video!\n {video_reply_text}"
 
-    def get_reply_text_from_video_row(self, video: list or None) -> str:
+    def generate_dm_text(self, recipient_user_id: str, sender_user_id: str, video_db_row: dict, message=None) -> str:
+        """TrashBot reply with message for messaging functionality
+        :param video_db_row: video row from db
+        :param sender_user_id: the user who sent the message
+        :param message: the message that the user sent
+        :param recipient_user_id: the user who will receive the message
+        :return: str
+        """
+        video_reply_text = self.get_reply_text_from_video_row(video_db_row=video_db_row)
+        if message:
+            return f"Hey <@{recipient_user_id}>! <@{sender_user_id}> just sent random video for you! \n\nMessage: \"{message}\".\n\n {video_reply_text}"
+        return f"Hey <@{recipient_user_id}>! <@{sender_user_id}> just sent random video for you!\n {video_reply_text}"
+
+    def get_reply_text_from_video_row(self, video_db_row: dict or None) -> str:
         """TrashBot reply with message for messaging functionality"""
-        return f"video #{video['id']} https://www.youtube.com/watch?v={video['video_id']} video rating: {video['rating']} /5 "
+        return f"video #{video_db_row['id']} https://www.youtube.com/watch?v={video_db_row['video_id']} video rating: {video_db_row['rating']} /5 "
 
     def ask_for_introduction(self, user_name) -> str:
         return f"Welcome to the random channel, <@{user_name}>! 🎉 You should introduce yourself to the rest of the team with an energizing trash video. 🎉"

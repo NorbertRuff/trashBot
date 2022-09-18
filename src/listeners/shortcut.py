@@ -1,4 +1,4 @@
-import logging
+from logging import Logger
 
 from slack_bolt import App, Respond, Ack
 
@@ -14,7 +14,7 @@ class ShortcutListener:
         self.trash_channel_id = trash_channel_id
         self.app.shortcut("save_shortcut")(self.handle_save_shortcut)
 
-    def handle_save_shortcut(self, body: dict, respond: Respond, ack: Ack, logger: logging.Logger):
+    def handle_save_shortcut(self, body: dict, respond: Respond, ack: Ack, logger: Logger):
         """Save a video to the playlist"""
         logger.info(body)
         ack()

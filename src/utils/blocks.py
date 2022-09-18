@@ -54,6 +54,13 @@ def get_home_view_blocks(user_id):
                     text="Use", value="send_trash_to_channel", action_id="open_send_trash_to_channel_modal"
                 ),
             ),
+            Divider(),
+            Section(
+                text="Check all the trash videos saved in the database",
+                accessory=Button(
+                    text="Use", value="list_trash_videos", action_id="open_list_trash_videos_modal"
+                ),
+            ),
         ]
     ).build()
     return payload
@@ -111,3 +118,52 @@ def get_send_trash_to_channel_modal():
         ],
     ).build()
     return payload
+
+
+def get_video_block_from_yt_details(video_details: dict) -> dict:
+    """Get the video block from the YouTube video details"""
+    video_block = {
+        "type": "video",
+        "title": {
+            "type": "plain_text",
+            "text": f"{video_details['title']}",
+            "emoji": True
+        },
+        "title_url": f"https://www.youtube.com/watch?v={video_details['video_id']}",
+        "video_url": f"https://www.youtube.com/embed/{video_details['video_id']}?feature=oembed&autoplay=1",
+        "alt_text": f"{video_details['fallback']}",
+        "thumbnail_url": f"https://i.ytimg.com/vi/{video_details['video_id']}/hqdefault.jpg",
+        "author_name": f"{video_details['author_name']}",
+        "provider_name": "YouTube",
+        "provider_icon_url": "https://a.slack-edge.com/80588/img/unfurl_icons/youtube.png"
+    }
+    return video_block
+
+
+def get_video_list_modal(videos: list, offset: int) -> dict:
+    """Get the video list modal"""
+    video_blocks = []
+    limit = 10
+    for i in range(offset, offset + limit):
+        video_blocks.append(get_video_block_from_yt_details(videos[i]))
+        video_blocks.append(get_send_to_channel_block(videos[i]["id"]))
+        video_blocks.append(get_divider_block())
+    payload = Home(
+        blocks=[Divider()],
+    ).build()
+    payload["blocks"].extend(video_blocks)
+    return payload
+
+
+def get_divider_block():
+    return Divider().build()
+
+
+def get_send_to_channel_block(video_id: str) -> dict:
+    """Get send to channel button block"""
+    return Section(
+        text="Send this :point_up: to the trash channel.",
+        accessory=Button(
+            text="Send", value=f"send_to_channel {video_id}", action_id="send_to_channel_button_action"
+        ),
+    ).build()

@@ -1,6 +1,7 @@
+from psycopg2.extras import RealDictCursor, RealDictRow
+
 from src.data_manager import connection
 from src.utils import make_new_timestamp
-from psycopg2.extras import RealDictCursor
 
 
 @connection.connection_handler
@@ -73,7 +74,7 @@ def update_rating_with_avg(cursor: RealDictCursor, video_id: str) -> None:
 def get_all_videos(cursor: RealDictCursor) -> list:
     """Get all videos from the database"""
     query = """
-        SELECT id, video_id, user_id, submission_time, rating
+        SELECT id, video_id, title, author_name, fallback, user_id, submission_time, rating
         FROM videos
         ORDER BY submission_time DESC;
         """
@@ -82,12 +83,26 @@ def get_all_videos(cursor: RealDictCursor) -> list:
 
 
 @connection.connection_handler
-def put_video_in_table(cursor: RealDictCursor, video_id: str, user_id: str) -> None:
+def get_video_by_id(cursor: RealDictCursor, video_id: int) -> RealDictRow:
+    """Get videos from the database by id"""
+    query = """
+        SELECT id, video_id, title, author_name, fallback, user_id, submission_time, rating
+        FROM videos
+        WHERE id = %(video_id)s;
+        """
+    cursor.execute(query, {'video_id': video_id})
+    return cursor.fetchone()
+
+
+@connection.connection_handler
+def put_video_in_table(cursor: RealDictCursor, video_id: str, title: str, author_name: str, fallback: str,
+                       user_id: str) -> None:
     """Put video in the database"""
     timestamp = make_new_timestamp()
     query = """
                 INSERT INTO videos
-                (video_id, user_id, submission_time)
-                VALUES (%(video_id)s, %(user_id)s, %(time)s)
+                (video_id, title, author_name, fallback, user_id,  submission_time)
+                VALUES (%(video_id)s, %(title)s, %(author_name)s, %(fallback)s, %(user_id)s, %(time)s)
                 """
-    cursor.execute(query, {'video_id': video_id, 'user_id': user_id, 'time': timestamp})
+    cursor.execute(query, {'video_id': video_id, 'title': title, 'author_name': author_name, 'fallback': fallback,
+                           'user_id': user_id, 'time': timestamp})

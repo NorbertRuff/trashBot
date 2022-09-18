@@ -21,8 +21,10 @@ class EventListener:
         self.app.event("team_join")(self.handle_team_join_events)
         self.app.event("app_home_opened")(self.handle_app_home_open_event)
 
-    def handle_message_events(self, message: dict, event: dict, say: Say, ack: Ack):
+    def handle_message_events(self, message: dict, event: dict, say: Say, ack: Ack, logger: Logger):
         """Handle message events"""
+
+        logger.info(message)
         ack()
         subtype = message.get("subtype", "")
         channel = message.get("channel", "")
@@ -92,9 +94,9 @@ class EventListener:
             return utils.get_random_video_response(say, self.bot)
         if any(word in text.lower() for word in TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS):
             return save_video(text, user, self.bot)
-        if "good slackBot" in text.lower():
+        if "good bot" in text.lower():
             return self.bot.random_love_reply()
-        if "bad slackBot" in text.lower():
+        if "bad bot" in text.lower():
             return self.bot.random_hate_reply()
         if "source code" in text.lower():
             return 'https://github.com/NorbertRuff/trashBot'

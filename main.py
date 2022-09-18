@@ -1,4 +1,5 @@
 import logging
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -25,8 +26,8 @@ logging.getLogger().warning(f"BOT_ID: {bot_id} -> BOT_NAME: {bot_name}")
 logging.getLogger().warning(bot.bot_id)
 
 command_listener = CommandListener(app, bot, TRASH_CHANNEL_ID)
-event_listener = EventListener(app, bot, TRASH_CHANNEL_ID)
 message_listener = MessageListener(app, bot, TRASH_CHANNEL_ID)
+event_listener = EventListener(app, bot, TRASH_CHANNEL_ID)
 action_listener = ActionListener(app, bot, TRASH_CHANNEL_ID)
 view_listener = ViewListener(app, bot, TRASH_CHANNEL_ID)
 shortcuts_listener = ShortcutListener(app, bot, TRASH_CHANNEL_ID)

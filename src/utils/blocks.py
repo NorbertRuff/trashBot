@@ -22,62 +22,26 @@ def get_rating_section(video_id: str) -> dict:
     return rate_block
 
 
-def get_help_block():
-    return [
-        Section(text="*Message inline commands*."),
-        ImageBlock(
-            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/random.png",
-            alt_text="Ask for a random trash video",
-        ),
-        ImageBlock(
-            title="Ask for a random trash video",
-            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/surprise.png",
-            alt_text="surprise",
-        ),
-        ImageBlock(
-            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/add.png",
-            alt_text="add",
-        ),
-        ImageBlock(
-            title="Save a video to the database",
-            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/save.png",
-            alt_text="save",
-        ),
-        ImageBlock(
-            title="Prints the help message to the channel",
-            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/help.png",
-            alt_text="help",
-        ),
-        ImageBlock(
-            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/bad_bot.png",
-            alt_text="bad_bot",
-        ),
-        ImageBlock(
-            title="Pet the bot",
-            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/good_bot.png",
-            alt_text="good_bot",
-        ),
-    ]
-
-
-def get_home_view_blocks(user_id):
-    """Get the home view blocks"""
-    payload = Home(
+def get_help_block() -> dict:
+    """Get the help block"""
+    return Home(
         blocks=[
-            Header(text="Welcome to the Trash Interface (TI)!"),
-            Section(text=f"Hi there <@{user_id}> :wave:, how can I help you today?"),
+            Actions(elements=[Button(text="Back to the home screen", value="home", action_id="home_button")]),
             Header(text="--|Help|-- :question:"),
-            Section(text="*Shortcut for saving*."),
-            ImageBlock(
-                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/shortcut_ex1.png",
-                alt_text="shortcut_ex1",
-            ),
+            Section(
+                text="*Shortcut for saving*. \n Message shortcuts are available in the More actions menu from any message."),
             ImageBlock(
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/shortcut_ex2.png",
                 alt_text="shortcut_ex2",
             ),
+            ImageBlock(
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/shortcut_ex1.png",
+                alt_text="shortcut_ex1",
+            ),
             Divider(),
-            Section(text="*Commands*."),
+            Section(
+                text="*Commands*.\n Slash commands allow you to complete an action with an app simply by sending a message in Slack."
+                     " Type double forward slash (//) in the message to view a list of available slash commands. /help and /list are only visible for you."),
             ImageBlock(
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/commands_ex.png",
                 alt_text="commands_ex",
@@ -87,7 +51,8 @@ def get_home_view_blocks(user_id):
                 alt_text="commands_ex",
             ),
             Divider(),
-            Section(text="*Message inline commands*."),
+            Section(
+                text="*Message inline commands*.\n Type a @ in any message and provide keywords that TrashBot understands."),
             ImageBlock(
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/random.png",
                 alt_text="random_trash",
@@ -123,17 +88,33 @@ def get_home_view_blocks(user_id):
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/good_bot.png",
                 alt_text="good_bot",
             ),
-            Divider(),
+            Divider()
+        ]).build()
+
+
+def get_home_view_blocks(user_id) -> dict:
+    """Get the home view blocks"""
+    payload = Home(
+        blocks=[
+            Header(text="Welcome to the Trash Interface (TI)!"),
+            Section(text=f"Hi there <@{user_id}> :wave:, how can I help you today?"),
+            Header(text="--|Help|-- :question:"),
+            Section(
+                text="*Navigates you to the help page*",
+                accessory=Button(
+                    text="Go", value="help", action_id="open_help_page"
+                ),
+            ),
             Header(text="--|Actions|-- :robot_face:"),
             Section(
-                text="*Send a random trash video for a user in a DM*",
+                text="*Send a random trash video for a user in a direct message*\nyou can also provide a message for it",
                 accessory=Button(
-                    text="Use", value="end_trash_to_user", action_id="open_send_trash_to_user_modal"
+                    text="Use", value="send_trash_to_user", action_id="open_send_trash_to_user_modal"
                 ),
             ),
             Divider(),
             Section(
-                text="*Send a random trash video for the trash channel*",
+                text="*Send a random trash video for the trash channel*\nyou can also provide a message for it",
                 accessory=Button(
                     text="Use", value="send_trash_to_channel", action_id="open_send_trash_to_channel_modal"
                 ),
@@ -142,7 +123,7 @@ def get_home_view_blocks(user_id):
             Section(
                 text="*Check all the trash videos saved in the database*",
                 accessory=Button(
-                    text="Use", value="list_trash_videos", action_id="open_list_trash_videos_modal"
+                    text="Let's check it", value="list_trash_videos", action_id="open_list_trash_videos_modal"
                 ),
             ),
         ]
@@ -150,7 +131,7 @@ def get_home_view_blocks(user_id):
     return payload
 
 
-def get_conversation_select_block():
+def get_conversation_select_block() -> dict:
     """Get the conversation select block"""
     payload = Message(
         text="Please select a conversation",
@@ -167,7 +148,7 @@ def get_conversation_select_block():
     return payload
 
 
-def get_send_trash_to_user_modal(video_id=None):
+def get_send_trash_to_user_modal(video_id=None) -> dict:
     """Get send trash to user modal"""
     if video_id:
         return Modal(
@@ -209,7 +190,7 @@ def get_send_trash_to_user_modal(video_id=None):
     ).build()
 
 
-def get_send_trash_to_channel_modal():
+def get_send_trash_to_channel_modal() -> dict:
     """Get send trash to channel modal"""
     payload = Modal(
         title="TrashBot",
@@ -257,7 +238,7 @@ def get_forward_navigate_button(offset: int):
     return Button(text="Next page", action_id="navigate forward", value=f"{offset}")
 
 
-def get_forward_and_back_navigate_button(backward_offset: int, forward_offset: int, videos_length: int):
+def get_forward_and_back_navigate_button(backward_offset: int, forward_offset: int, videos_length: int) -> dict:
     """Get the front and back navigate buttons"""
     elements = []
     if backward_offset < 0:
@@ -293,12 +274,12 @@ def get_video_list_modal(videos: list, offset: int) -> dict:
     return payload
 
 
-def get_divider_block():
+def get_divider_block() -> dict:
     """Get the divider block"""
     return Divider().build()
 
 
-def get_home_button():
+def get_home_button() -> dict:
     """Get the home button"""
     return Actions(elements=[Button(text="Back to the home screen", value="home", action_id="home_button")]).build()
 

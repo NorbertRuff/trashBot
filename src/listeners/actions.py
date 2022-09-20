@@ -17,6 +17,7 @@ class ActionListener:
         self.trash_channel_id = trash_channel_id
         self.app.action(re.compile("rate_video"))(self.rating_button_click)
         self.app.action("send_to_user_from_list_button_action")(self.handle_open_send_trash_to_user_modal)
+        self.app.action("open_help_page")(self.handle_open_help_page)
         self.app.action(re.compile("send_to_channel_button_action"))(self.handle_send_to_channel_button_action)
         self.app.action("open_send_trash_to_channel_modal")(self.handle_open_send_trash_to_channel_modal)
         self.app.action("open_send_trash_to_user_modal")(self.handle_open_send_random_trash_to_user_modal)
@@ -37,6 +38,18 @@ class ActionListener:
             logger.info(f"User {user_id} already rated video {video_id}")
             return
         data_manager.insert_rating(video_id, user_id, rating)
+
+    def handle_open_help_page(self, body: dict, client: WebClient, ack: Ack, logger: Logger):
+        logger.info(body)
+        ack()
+        user_id = body.get("user").get("id", "")
+        try:
+            client.views_publish(
+                user_id=user_id,
+                view=blocks.get_help_block()
+            )
+        except Exception as e:
+            logger.error(f"Error publishing view to Home Tab: {e}")
 
     def handle_send_to_channel_button_action(self, client: WebClient, body: dict, ack: Ack, say: Say, logger: Logger):
         logger.info(body)

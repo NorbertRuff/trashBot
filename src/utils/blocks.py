@@ -23,7 +23,41 @@ def get_rating_section(video_id: str) -> dict:
 
 
 def get_help_block():
-    return "fdds"
+    return [
+        Section(text="*Message inline commands*."),
+        ImageBlock(
+            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/random.png",
+            alt_text="Ask for a random trash video",
+        ),
+        ImageBlock(
+            title="Ask for a random trash video",
+            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/surprise.png",
+            alt_text="surprise",
+        ),
+        ImageBlock(
+            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/add.png",
+            alt_text="add",
+        ),
+        ImageBlock(
+            title="Save a video to the database",
+            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/save.png",
+            alt_text="save",
+        ),
+        ImageBlock(
+            title="Prints the help message to the channel",
+            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/help.png",
+            alt_text="help",
+        ),
+        ImageBlock(
+            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/bad_bot.png",
+            alt_text="bad_bot",
+        ),
+        ImageBlock(
+            title="Pet the bot",
+            image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/good_bot.png",
+            alt_text="good_bot",
+        ),
+    ]
 
 
 def get_home_view_blocks(user_id):
@@ -33,7 +67,39 @@ def get_home_view_blocks(user_id):
             Header(text="Welcome to the Trash Interface (TI)!"),
             Section(text=f"Hi there <@{user_id}> :wave:, how can I help you today?"),
             Header(text="--|Help|-- :question:"),
-            Section(text=get_help_block()),
+            Section(text="*Message inline commands*."),
+            ImageBlock(
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/random.png",
+                alt_text="random_trash",
+            ),
+            ImageBlock(
+                title="Ask for a random trash video",
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/surprise.png",
+                alt_text="surprise",
+            ),
+            ImageBlock(
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/add.png",
+                alt_text="add",
+            ),
+            ImageBlock(
+                title="Save a video to the database",
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/save.png",
+                alt_text="save",
+            ),
+            ImageBlock(
+                title="Prints the help message to the channel",
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/help.png",
+                alt_text="help",
+            ),
+            ImageBlock(
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/bad_bot.png",
+                alt_text="bad_bot",
+            ),
+            ImageBlock(
+                title="Pet the bot",
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/good_bot.png",
+                alt_text="good_bot",
+            ),
             Divider(),
             Header(text="--|Actions|-- :robot_face:"),
             Section(

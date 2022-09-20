@@ -1,10 +1,11 @@
 from logging import Logger
 
-from slack_bolt import App, Ack, Respond
+from slack_bolt import App, Ack, Respond, Say
 from slack_sdk import WebClient
 
-from src import utils
+from src import utils, data_manager
 from src.slack_bot import TrashBot
+from src.utils import blocks
 
 
 # <------------------------views------------------------------->
@@ -19,12 +20,14 @@ class ViewListener:
     def handle_modal_submission_trash_to_user(self, payload: dict, body: dict, client: WebClient, ack: Ack,
                                               respond: Respond, logger: Logger):
         logger.info(body)
+        logger.info(payload)
         ack()
         sender = body.get("user", "").get("id", "")
         values = payload.get("state", "").get("values", "")
+        video_id = payload.get("blocks")[1].get("alt_text") if payload.get("blocks") else None
+        video_db_row = utils.get_random_video_db_row() if not video_id else data_manager.get_video_by_video_id(video_id)
         message_to_send = values.get("message_to_send", "").get("message_to_send", "").get("value", "")
         recipient = values.get("selected_user", "").get("selected_user", "").get("selected_user", "")
-        video_db_row = utils.get_random_video_db_row()
         dm_channel = client.conversations_open(users=recipient)
         channel = dm_channel.get("channel", {}).get("id", "")
         if not channel:
@@ -33,13 +36,16 @@ class ViewListener:
                                          video_db_row=video_db_row)
         client.chat_postMessage(channel=channel, text=text)
 
-    def handle_modal_submission_trash_to_channel(self, payload: dict, body: dict, client, ack: Ack, logger: Logger):
+    def handle_modal_submission_trash_to_channel(self, payload: dict, body: dict, client: WebClient, ack: Ack, say: Say,
+                                                 logger: Logger):
         logger.info(body)
         ack()
         sender_user_id = body.get("user", "").get("id", "")
         values = payload.get("state", "").get("values", "")
         message_to_send = values.get("message_to_send", "").get("message_to_send", "").get("value", "")
         video_db_row = utils.get_random_video_db_row()
+        video_id = video_db_row.get("video_id", "")
         text = self.bot.generate_bot_post_to_channel(sender_user_id=sender_user_id, message=message_to_send,
                                                      video_db_row=video_db_row)
         client.chat_postMessage(channel=self.trash_channel_id, text=text)
+        say(channel=self.trash_channel_id, text=blocks.get_rating_section(video_id=video_id))

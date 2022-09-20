@@ -83,12 +83,24 @@ def get_all_videos(cursor: RealDictCursor) -> list:
 
 
 @connection.connection_handler
-def get_video_by_id(cursor: RealDictCursor, video_id: int) -> RealDictRow:
+def get_video_by_id(cursor: RealDictCursor, id: int) -> RealDictRow:
     """Get videos from the database by id"""
     query = """
         SELECT id, video_id, title, author_name, fallback, user_id, submission_time, rating
         FROM videos
-        WHERE id = %(video_id)s;
+        WHERE id = %(id)s;
+        """
+    cursor.execute(query, {'id': id})
+    return cursor.fetchone()
+
+
+@connection.connection_handler
+def get_video_by_video_id(cursor: RealDictCursor, video_id: int) -> RealDictRow:
+    """Get videos from the database by id"""
+    query = """
+        SELECT id, video_id, title, author_name, fallback, user_id, submission_time, rating
+        FROM videos
+        WHERE video_id = %(video_id)s;
         """
     cursor.execute(query, {'video_id': video_id})
     return cursor.fetchone()

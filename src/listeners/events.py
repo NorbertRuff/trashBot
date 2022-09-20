@@ -23,7 +23,6 @@ class EventListener:
 
     def handle_message_events(self, message: dict, event: dict, say: Say, ack: Ack, logger: Logger):
         """Handle message events"""
-
         logger.info(message)
         ack()
         subtype = message.get("subtype", "")
@@ -75,6 +74,7 @@ class EventListener:
         say(channel=self.trash_channel_id, text=text)
 
     def handle_app_home_open_event(self, event: dict, client: WebClient, ack: Ack, logger: Logger):
+        """Handle app home open event"""
         logger.info(event)
         ack()
         user_id = event.get("user")

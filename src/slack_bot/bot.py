@@ -73,8 +73,8 @@ class TrashBot:
         """
         video_reply_text = self.get_reply_text_from_video_row(video_db_row=video_db_row)
         if message:
-            return f"<@{sender_user_id}> just asked for random video! \n\nMessage: \"{message}\".\n\n {video_reply_text}"
-        return f"<@{sender_user_id}> just asked for random video!\n {video_reply_text}"
+            return f"<@{sender_user_id}> just requested a trash video! \n\nMessage: \"{message}\".\n\n {video_reply_text}"
+        return f"<@{sender_user_id}> just requested a trash video!\n {video_reply_text}"
 
     def generate_dm_text(self, recipient_user_id: str, sender_user_id: str, video_db_row: dict, message=None) -> str:
         """TrashBot reply with message for messaging functionality
@@ -86,8 +86,8 @@ class TrashBot:
         """
         video_reply_text = self.get_reply_text_from_video_row(video_db_row=video_db_row)
         if message:
-            return f"Hey <@{recipient_user_id}>! <@{sender_user_id}> just sent random video for you! \n\nMessage: \"{message}\".\n\n {video_reply_text}"
-        return f"Hey <@{recipient_user_id}>! <@{sender_user_id}> just sent random video for you!\n {video_reply_text}"
+            return f"Hey <@{recipient_user_id}>! <@{sender_user_id}> just sent a trash video for you! \n\nMessage: \"{message}\".\n\n {video_reply_text}"
+        return f"Hey <@{recipient_user_id}>! <@{sender_user_id}> just sent a trash video for you!\n {video_reply_text}"
 
     def get_reply_text_from_video_row(self, video_db_row: dict or None) -> str:
         """TrashBot reply with message for messaging functionality"""

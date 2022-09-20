@@ -67,6 +67,26 @@ def get_home_view_blocks(user_id):
             Header(text="Welcome to the Trash Interface (TI)!"),
             Section(text=f"Hi there <@{user_id}> :wave:, how can I help you today?"),
             Header(text="--|Help|-- :question:"),
+            Section(text="*Shortcut for saving*."),
+            ImageBlock(
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/shortcut_ex1.png",
+                alt_text="shortcut_ex1",
+            ),
+            ImageBlock(
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/shortcut_ex2.png",
+                alt_text="shortcut_ex2",
+            ),
+            Divider(),
+            Section(text="*Commands*."),
+            ImageBlock(
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/commands_ex.png",
+                alt_text="commands_ex",
+            ),
+            ImageBlock(
+                image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/commands.png",
+                alt_text="commands_ex",
+            ),
+            Divider(),
             Section(text="*Message inline commands*."),
             ImageBlock(
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/random.png",

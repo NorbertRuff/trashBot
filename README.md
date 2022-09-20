@@ -1,52 +1,60 @@
 ## <div style="color:#f59800" align="center">---|Trash Bot|---</div>
+
 ![logo](https://github.com/NorbertRuff/trashBot/blob/master/blob/logo.png?raw=true)
 
 A handy bot for slack, to manage your trash videos!
 
-Everybody loves trash videos, and most of the companies have some kind of channel for random bs videos.
+Everybody loves trash videos, and most of the companies have some kind of channel for the random bs videos.
 
-The goal of this project was to create a slack app that can identify, and save these videos. 
+The goal of this project was to create a Slack app that can identify, and save these videos.
 
 The bot has a DB that stores the videos, and can be used to fetch a random video, save it, and delete it.
 
-It can also identify the last valid youtube from the channel messages, and save it to the trashDatabase.
+It can also identify the last valid YouTube from the channel messages, and save it to the trashDatabase.
 
-It can also save directly a video with an emoji command, or with slack shortcuts.
- 
+You can save a video with a command, or with Slack shortcuts.
+
+It has a simple Ui, that can be found at the home screen of the app.
+
 # <div style="color:#f59800" align="center">---|👨‍💻 Tech Stack|---</div>
 
 **Client:** Slack
 
 **Server:** Python with bolt
 
-
 # Packages
 
-  * Slack 
-  * psycopg2
-  * python-dotenv
-  * slack-bolt
-  * slack-sdk
-
+* Slack
+* psycopg2
+* python-dotenv
+* slack-bolt
+* slack-sdk
+* slackblocks
 
 # Requirements
 
-  * Python 3.7
+* Python 3.7
 
 ## Screenshots
 
-![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot1.png?raw=true)
+![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/home.png?raw=true)
+
 ---
 
-![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot2.png?raw=true)
+![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot1.png?raw=true)
+
 ---
 
 ![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot3.png?raw=true)
+
 ---
 
 ![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/screenshot4.png?raw=true)
----
 
+![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/Screenshot1.png?raw=true)
+
+![screenshot](https://github.com/NorbertRuff/trashBot/blob/master/blob/Screenshot2.png?raw=true)
+---
 
 ## <div style="color:#f59800" align="center">---|⛑️Environment Variables|---</div>
 
@@ -58,7 +66,7 @@ To run this project, you will need to add the following environment variables to
 `TRASH_CHANNEL_ID` - the channel id of the trash channel  
 `DATABASE_URL`  
 `DATABASE_SSL` - 'disable' or 'require'  
-`LOG_LEVEL`-  logging.DEBUG or logging.INFO or logging.WARNING or logging.ERROR or logging.CRITICAL
+`LOG_LEVEL`- logging.DEBUG or logging.INFO or logging.WARNING or logging.ERROR or logging.CRITICAL
 
 for local development, you need to add the following environment variables to your .env file
 
@@ -67,7 +75,7 @@ for local development, you need to add the following environment variables to yo
 `PSQL_HOST`  
 `PSQL_DB_NAME`  
 `PSQL_PORT`  
-`DATABASE_SSL='disable'`  
+`DATABASE_SSL='disable'`
 
 # <div style="color:#f59800" align="center">---|🕶️Run Locally|---</div>
 
@@ -84,7 +92,7 @@ Go to the project directory
 ```
 
 > Install pip if you don't have it yet
-> 
+>
 > ```bash
 > pip3 (sudo apt install python3-pip)
 > ```
@@ -115,11 +123,12 @@ Start the server
 
 ## Usage
 
-Start docker container with: 
+Start docker container with:
 
 ```bash
   docker-compose up -d
 ```
+
 This also seeds the db with some videos
 
 After install you have to set up your app on slack.
@@ -132,30 +141,29 @@ Add shortcut for adding videos.
 
 ## <div style="color:#f59800" align="center">---|💺Usage/Examples|---</div>
 
+commands:
 
-commands:  
-- /help - show this message  
-- /add - add a new trash video  
-- /surprise - It will get a random trash video and posts it in the channel  
-- /list - list all trash videos  
-- /delete - delete a trash video by id **IN PROGRESS**  
-- /rate - rate a trash video by id **IN PROGRESS**  
+- /help - show this message
+- /add - add a new trash video
+- /surprise - It will get a random trash video and posts it in the channel
+- /list - list all trash videos
 
-It can also save a video with the shortcut you find when clicking on a message ... thingy (meatballs menu?) and selecting the save shortcut.
+It can also save a video with the shortcut you find when clicking on a message ... thingy (meatballs menu?) and
+selecting the save shortcut.
 
 Mention trashBot in a message and he can do the following:
-Mentions:   
-- @trashBot + 'help' ->        It will print this message  
-- @trashBot + 'list' ->        It will list all of the videos from the trash playlist  
-- @trashBot + 'random' or 'surprise' or 'trash' or 'video' ->        It will get a random trash for you  
-- @trashBot + 'save' or 'add' or 'add to trash' + <video Url> ->       It will save the <video Url> in this message to the trash playlist  
+Mentions:
 
+- @trashBot + 'help' ->        It will print this message
+- @trashBot + 'list' ->        It will list all of the videos from the trash playlist
+- @trashBot + 'random' or 'surprise' or 'trash' or 'video' ->        It will get a random trash for you
+- @trashBot + 'save' or 'add' or 'add to trash' + <video Url> ->       It will save the <video Url> in this message to
+  the trash playlist
 
 # <div style="color:#f59800" align="center">---|✍️ Contributing|---</div>
 
 Contributions, issues and feature requests are welcome!<br/>
 Give a ⭐️ if this project helped you!
-
 
 # <div style="color:#f59800" align="center">---|🚀 About Me|---</div>
 
@@ -178,7 +186,6 @@ Give a ⭐️ if this project helped you!
 
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ruff-norbert/)
 
-
 <h2><img src="https://media.giphy.com/media/cj87CxfRtrUifF3Ryk/giphy.gif" height="25"> My Github Stats</h2>
 
 <div align="center">
@@ -191,11 +198,8 @@ Give a ⭐️ if this project helped you!
 
 </div>
 
-
-
-
-
 ## My Skill Set 👩‍💻
+
 <!-- https://dev.to/envoy_/150-badges-for-github-pnk -->
 <div align="center">  
 <img src="https://www.codewars.com/users/NorbertRuff/badges/large">
@@ -207,23 +211,23 @@ Give a ⭐️ if this project helped you!
 <div align="center">  
 <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" height="25">
 <img src="https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=java&logoColor=white" height="25">
-  
+
  <img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white" height="25"> 
-  
+
 <img src="https://img.shields.io/badge/-GraphQL-E10098?style=flat-square&logo=graphql&logoColor=white" height="25">
-  
+
 <img src="https://img.shields.io/badge/shell_script-%23121011?style=flat-square&logo=shell&logoColor=white" height="25">
-  
+
 <img src="https://img.shields.io/badge/spring-%236DB33F?style=flat-square&logo=spring&logoColor=white" height="25">
-   
+
 <img src="https://img.shields.io/badge/Svelte-4A4A55?style=flat-square&logo=svelte&logoColor=FF3E00" height="25">
-   
+
 <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white" height="25">
-  
-  
+
+
 <img src="https://img.shields.io/badge/-jest-%23C21325?style=flat-square&logo=jest&logoColor=white" height="25">
-  
-  
+
+
 </div>
 
 
@@ -246,10 +250,10 @@ Give a ⭐️ if this project helped you!
 <img src="https://img.shields.io/badge/Thymeleaf-%23005C0F?style=flat-square&logo=Thymeleaf&logoColor=white" height="25">
 <img src="https://img.shields.io/badge/styled--components-DB7093?style=flat-square&logo=styled-components&logoColor=white" height="25">
   <img src="https://img.shields.io/badge/Material--UI-0081CB?style=flat-square&logo=material-ui&logoColor=white" height="25">
-  
-  
-  
-  
+
+
+
+
 
 </div>
 
@@ -283,7 +287,7 @@ Give a ⭐️ if this project helped you!
 <img src="https://aleen42.github.io/badges/src/illustrator.svg" height="25">
 <img src="https://aleen42.github.io/badges/src/dreamweaver.svg" height="25">
 <img src="https://aleen42.github.io/badges/src/flash.svg" height="25">
-  
+
  </div>
 
 </td>

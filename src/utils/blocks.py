@@ -77,6 +77,7 @@ def get_home_view_blocks(user_id):
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/surprise.png",
                 alt_text="surprise",
             ),
+            Divider(),
             ImageBlock(
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/add.png",
                 alt_text="add",
@@ -86,11 +87,13 @@ def get_home_view_blocks(user_id):
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/save.png",
                 alt_text="save",
             ),
+            Divider(),
             ImageBlock(
                 title="Prints the help message to the channel",
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/help.png",
                 alt_text="help",
             ),
+            Divider(),
             ImageBlock(
                 image_url="https://raw.githubusercontent.com/NorbertRuff/trashBot/master/blob/bad_bot.png",
                 alt_text="bad_bot",

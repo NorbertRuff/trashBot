@@ -23,7 +23,6 @@ class EventListener:
 
     def handle_message_events(self, message: dict, event: dict, say: Say, ack: Ack, logger: Logger):
         """Handle message events"""
-        logger.info(message)
         ack()
         subtype = message.get("subtype", "")
         channel = message.get("channel", "")

@@ -32,7 +32,7 @@ class CommandListener:
         playlist = data_manager.get_all_videos()
         response = ""
         for video in playlist:
-            response += f'#{video["id"]} -> https://www.youtube.com/watch?v={video["video_id"]}\n'
+            response += f'#{video["id"]} {video["title"]} -> https://www.youtube.com/watch?v={video["video_id"]}\n'
         respond(response)
 
     def handle_add_command(self, body: dict, respond: Respond, ack: Ack, logger: Logger):

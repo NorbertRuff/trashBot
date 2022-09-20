@@ -22,13 +22,20 @@ def get_rating_section(video_id: str) -> dict:
     return rate_block
 
 
+def get_help_block():
+    return "fdds"
+
+
 def get_home_view_blocks(user_id):
     """Get the home view blocks"""
     payload = Home(
         blocks=[
-            Header(text="TrashUI!"),
-            Section(text=f"Hi there <@{user_id}> :wave:, how can I help you today?\n\n *Select an action:*"),
+            Header(text="Welcome to the Trash Interface (TI)!"),
+            Section(text=f"Hi there <@{user_id}> :wave:, how can I help you today?"),
+            Header(text="--|Help|-- :question:"),
+            Section(text=get_help_block()),
             Divider(),
+            Header(text="--|Actions|-- :robot_face:"),
             Section(
                 text="*Send a random trash video for a user in a DM*",
                 accessory=Button(

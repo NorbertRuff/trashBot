@@ -96,7 +96,7 @@ def get_video_by_id(cursor: RealDictCursor, id: int) -> RealDictRow:
 
 @connection.connection_handler
 def get_video_by_video_id(cursor: RealDictCursor, video_id: int) -> RealDictRow:
-    """Get videos from the database by id"""
+    """Get videos from the database by video_id"""
     query = """
         SELECT id, video_id, title, author_name, fallback, user_id, submission_time, rating
         FROM videos

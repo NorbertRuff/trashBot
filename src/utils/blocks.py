@@ -100,7 +100,7 @@ def get_home_view_blocks(user_id) -> dict:
     """Builds and returns the home view blocks"""
     payload = Home(
         blocks=[
-            Header(text="Welcome to the Trash Interface (TI)!"),
+            Header(text="Welcome to the TrashBot User Interface (TUI)!"),
             Section(text=f"Hi there <@{user_id}> :wave:, how can I help you today?"),
             Header(text="--|Help|-- :question:"),
             Section(

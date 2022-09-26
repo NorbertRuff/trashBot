@@ -1,3 +1,7 @@
+"""
+Handles the connection to the database
+"""
+
 import os
 
 import psycopg2
@@ -19,6 +23,7 @@ def open_database():
 
 def connection_handler(function):
     """Decorator for database connection handling"""
+
     def wrapper(*args, **kwargs):
         connection = open_database()
         dict_cur = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -26,4 +31,5 @@ def connection_handler(function):
         dict_cur.close()
         connection.close()
         return ret_value
+
     return wrapper

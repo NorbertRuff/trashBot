@@ -1,9 +1,13 @@
+"""
+Blocks for the home tab, messages and modals
+"""
+
 from blockkit import Button, Divider, Header, Home, Input, Message, UsersSelect, PlainTextInput, Modal, \
     Actions, ConversationsSelect, Image, enums, Section, ImageBlock
 
 
 def get_rating_section(video_id: str) -> dict:
-    """Get the rating section interactive block section for a video"""
+    """Builds and returns the rating section interactive block section for a video"""
     rate_block = Message(
         text="Rate this video!",
         blocks=[
@@ -23,7 +27,7 @@ def get_rating_section(video_id: str) -> dict:
 
 
 def get_help_block() -> dict:
-    """Get the help block"""
+    """Builds and returns the help block"""
     return Home(
         blocks=[
             Actions(elements=[Button(text="Back to the home screen", value="home", action_id="home_button")]),
@@ -93,7 +97,7 @@ def get_help_block() -> dict:
 
 
 def get_home_view_blocks(user_id) -> dict:
-    """Get the home view blocks"""
+    """Builds and returns the home view blocks"""
     payload = Home(
         blocks=[
             Header(text="Welcome to the Trash Interface (TI)!"),
@@ -102,29 +106,44 @@ def get_home_view_blocks(user_id) -> dict:
             Section(
                 text="*Navigates you to the help page*",
                 accessory=Button(
-                    text="Go", value="help", action_id="open_help_page"
+                    text=":sos:", value="help", action_id="open_help_page"
                 ),
             ),
             Header(text="--|Actions|-- :robot_face:"),
             Section(
                 text="*Send a random trash video for a user in a direct message*\nyou can also provide a message for it",
                 accessory=Button(
-                    text="Use", value="send_trash_to_user", action_id="open_send_trash_to_user_modal"
+                    text=":incoming_envelope: ", value="send_trash_to_user", action_id="open_send_trash_to_user_modal"
                 ),
             ),
             Divider(),
             Section(
                 text="*Send a random trash video for the trash channel*\nyou can also provide a message for it",
                 accessory=Button(
-                    text="Use", value="send_trash_to_channel", action_id="open_send_trash_to_channel_modal"
+                    text=":movie_camera:", value="send_trash_to_channel", action_id="open_send_trash_to_channel_modal"
                 ),
             ),
             Divider(),
             Section(
                 text="*Check all the trash videos saved in the database*",
                 accessory=Button(
-                    text="Let's check it", value="list_trash_videos", action_id="open_list_trash_videos_modal"
+                    text=":put_litter_in_its_place:", value="list_trash_videos",
+                    action_id="open_list_trash_videos_modal"
                 ),
+            ),
+            Divider(),
+            Section(
+                text="*Save a video to the trash database*",
+                accessory=Button(
+                    text=":floppy_disk:", value="add_trash_video", action_id="open_add_trash_videos_modal"
+                ),
+            ),
+            Divider(),
+            Section(
+                text="My source code is here :point_right: <https://github.com/NorbertRuff/trashBot|TrashBot on github>"
+            ),
+            Section(
+                text="Feel free to contribute :wink:, request features :bulb: or report bugs :bug:"
             ),
         ]
     ).build()
@@ -132,7 +151,7 @@ def get_home_view_blocks(user_id) -> dict:
 
 
 def get_conversation_select_block() -> dict:
-    """Get the conversation select block"""
+    """Builds and returns the conversation select block"""
     payload = Message(
         text="Please select a conversation",
         blocks=[
@@ -149,7 +168,7 @@ def get_conversation_select_block() -> dict:
 
 
 def get_send_trash_to_user_modal(video_id=None) -> dict:
-    """Get send trash to user modal"""
+    """Builds and returns the send trash to user modal"""
     if video_id:
         return Modal(
             title="TrashBot",
@@ -191,7 +210,7 @@ def get_send_trash_to_user_modal(video_id=None) -> dict:
 
 
 def get_send_trash_to_channel_modal() -> dict:
-    """Get send trash to channel modal"""
+    """Builds and returns the send trash to channel modal"""
     payload = Modal(
         title="TrashBot",
         submit="Send",
@@ -208,8 +227,26 @@ def get_send_trash_to_channel_modal() -> dict:
     return payload
 
 
+def get_save_trash_modal() -> dict:
+    """Builds and returns the send trash to channel modal"""
+    payload = Modal(
+        title="TrashBot",
+        submit="Save",
+        close="Cancel",
+        callback_id="save_trash_modal",
+        blocks=[
+            Section(text="*Save a trash video*"),
+            Input(
+                element=PlainTextInput(action_id="youtube_url"),
+                label="Youtube Url", optional=False, block_id="youtube_url"
+            ),
+        ],
+    ).build()
+    return payload
+
+
 def get_video_block_from_yt_details(video_details: dict) -> dict:
-    """Get the video block from the YouTube video details"""
+    """Builds and returns the video block from the YouTube video details"""
     video_block = {
         "type": "video",
         "title": {
@@ -229,17 +266,17 @@ def get_video_block_from_yt_details(video_details: dict) -> dict:
 
 
 def get_back_navigate_button(offset: int):
-    """Get the back navigate button"""
+    """Builds and returns the back navigate button"""
     return Button(text="Previous page", action_id="navigate backward", value=f"{offset}")
 
 
 def get_forward_navigate_button(offset: int):
-    """Get the back navigate button"""
+    """Builds and returns the forward navigate button"""
     return Button(text="Next page", action_id="navigate forward", value=f"{offset}")
 
 
 def get_forward_and_back_navigate_button(backward_offset: int, forward_offset: int, videos_length: int) -> dict:
-    """Get the front and back navigate buttons"""
+    """Builds and returns the front and back navigate block"""
     elements = []
     if backward_offset < 0:
         elements.append(get_forward_navigate_button(forward_offset))
@@ -253,7 +290,7 @@ def get_forward_and_back_navigate_button(backward_offset: int, forward_offset: i
 
 
 def get_video_list_modal(videos: list, offset: int) -> dict:
-    """Get the video list modal"""
+    """Builds and returns the video list modal"""
     video_blocks = []
     videos_length = len(videos)
     limit = 10
@@ -275,17 +312,17 @@ def get_video_list_modal(videos: list, offset: int) -> dict:
 
 
 def get_divider_block() -> dict:
-    """Get the divider block"""
+    """Builds and returns the divider block"""
     return Divider().build()
 
 
 def get_home_button() -> dict:
-    """Get the home button"""
+    """Builds and returns the home button"""
     return Actions(elements=[Button(text="Back to the home screen", value="home", action_id="home_button")]).build()
 
 
 def get_image_section(video_db_row: dict) -> dict:
-    """Get the image section block"""
+    """Builds and returns the image section block"""
     return Section(
         text=f"#*{video_db_row['id']}* -> "
              f"*{video_db_row['title']}*"
@@ -299,7 +336,7 @@ def get_image_section(video_db_row: dict) -> dict:
 
 
 def get_image_actions(video_db_row: dict) -> dict:
-    """Get the image actions block"""
+    """Builds and returns the image actions block"""
     return Actions(
         elements=[
             Button(
@@ -317,7 +354,7 @@ def get_image_actions(video_db_row: dict) -> dict:
 
 
 def get_send_to_channel_block(video_id: str) -> dict:
-    """Get send to channel button block"""
+    """Builds and returns the send to channel button block"""
     block = Section(
         text="Send this :point_up: to the trash channel.",
         accessory=Button(

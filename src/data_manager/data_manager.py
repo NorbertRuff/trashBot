@@ -1,3 +1,8 @@
+"""
+psycopg2 Data handler for the project.
+psycopg2 documentation: https://www.psycopg.org/docs/
+"""
+
 from psycopg2.extras import RealDictCursor, RealDictRow
 
 from src.data_manager import connection
@@ -32,7 +37,7 @@ def user_already_rated(cursor: RealDictCursor, video_id: str, user_id: str) -> l
 
 @connection.connection_handler
 def get_avg_rating(cursor: RealDictCursor, video_id: str) -> list:
-    """Get average rating for a video"""
+    """Returns average rating for a video"""
     query = """
         SELECT avg(rating)
         FROM rating
@@ -72,7 +77,7 @@ def update_rating_with_avg(cursor: RealDictCursor, video_id: str) -> None:
 
 @connection.connection_handler
 def get_all_videos(cursor: RealDictCursor) -> list:
-    """Get all videos from the database"""
+    """Returns all videos from the database"""
     query = """
         SELECT id, video_id, title, author_name, fallback, user_id, submission_time, rating
         FROM videos
@@ -84,7 +89,7 @@ def get_all_videos(cursor: RealDictCursor) -> list:
 
 @connection.connection_handler
 def get_video_by_id(cursor: RealDictCursor, id: int) -> RealDictRow:
-    """Get videos from the database by id"""
+    """Returns videos from the database by id"""
     query = """
         SELECT id, video_id, title, author_name, fallback, user_id, submission_time, rating
         FROM videos
@@ -96,7 +101,7 @@ def get_video_by_id(cursor: RealDictCursor, id: int) -> RealDictRow:
 
 @connection.connection_handler
 def get_video_by_video_id(cursor: RealDictCursor, video_id: int) -> RealDictRow:
-    """Get videos from the database by video_id"""
+    """Returns videos from the database by video_id"""
     query = """
         SELECT id, video_id, title, author_name, fallback, user_id, submission_time, rating
         FROM videos

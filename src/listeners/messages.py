@@ -1,3 +1,7 @@
+"""
+Handles the messages sent to the bot
+"""
+
 import re
 from logging import Logger
 

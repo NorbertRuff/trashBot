@@ -1,13 +1,17 @@
+"""
+This Listener is responsible for handling commands sent by the user.
+"""
 from logging import Logger
 
 from slack_bolt import App, Respond, Ack, Say
 
 from src import data_manager, utils
 from src.slack_bot import TrashBot
-from src.utils import save_video, blocks
+from src.utils import blocks, save_video
 
 
 # <------------------------command------------------------------->
+
 class CommandListener:
     def __init__(self, bolt_app: App, bot: TrashBot, trash_channel_id: str):
         self.bot = bot

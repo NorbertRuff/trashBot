@@ -1,3 +1,7 @@
+"""
+Message templates for the Slack bot.
+"""
+
 TRASHBOT_HELP_MSG = f"""
 :rocket: Heeellloo I am TrashBot! I will manage this channels trash videos!
 
@@ -6,10 +10,6 @@ I have some command shortcuts press // in the message box to see them.:
     /add <youtube link> - add a new trash video
     /surprise - I will get a random trash video for you
     /list - list all trash videos
-    /delete - delete a trash video by id **IN PROGRESS**
-    /rate - rate a trash video by id **IN PROGRESS**
-    /send-to-user <User mention> / <message> - send a random trash video to a user with or without message in dm
-    /send-to-channel <User mention> / <message> - send a random trash video to a user with or without message in trash channel
 
 I can also save a video with the shortcut you will find when clicking on a message ... thingy (meatballs menu?) and selecting the save shortcut.
 
@@ -47,10 +47,13 @@ TRASH_BOT_HATE = [':cry: I\'m sorry, I hate you', ':cry: Well then fix me :robot
                   'Fix me very badly :cry:', 'I hate you too :heart_eyes:',
                   'You can fix me here: https://github.com/NorbertRuff/trashBot']
 
-
 TRASH_BOT_MESSAGE = ['add', 'add to playlist', 'add to trash']
 TRASH_BOT_VIDEO_ADDED = ':white_check_mark: Video added to trash playlist'
-TRASH_BOT_DONT_UNDERSTAND = 'Huh? I did not understand that'
+TRASH_BOT_DONT_UNDERSTAND = ['Huh? I did not understand that', 'I don\'t understand that', 'I don\'t get it',
+                             'What?', 'What do you mean?', 'I don\'t know what you mean',
+                             ':thinking_face: :thinking_face: :thinking_face:',
+                             ':question: :question: :question:', 'I don\'t know what you are saying',
+                             'I don\'t know what you are trying to say']
 TRASH_BOT_NOT_FOUND_LINK = 'I could not find a link in this or in the previous message. Please use the command with /add <url>.'
 TRASH_BOT_ALREADY_IN_PLAYLIST = ':robot_face: I already have this video in the trash playlist.'
 TRASH_BOT_SHIT_HIT_THE_FAN = 'Something went wrong, shit hit the fan'

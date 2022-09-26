@@ -1,7 +1,11 @@
+"""
+A Bot class that handles all the Slack bot replies
+"""
 import random
 
 from .bot_messages import TRASHBOT_HELP_MSG, TRASH_BOT_EMOJI_REPLIES, TRASH_BOT_LOVE, TRASH_BOT_HATE, \
-    TRASH_BOT_SHIT_HIT_THE_FAN, TRASH_BOT_ERROR_REPLIES, TRASH_BOT_SUCCESS_REPLIES, TRASH_BOT_GENERAL_REPLIES
+    TRASH_BOT_SHIT_HIT_THE_FAN, TRASH_BOT_ERROR_REPLIES, TRASH_BOT_SUCCESS_REPLIES, TRASH_BOT_GENERAL_REPLIES, \
+    TRASH_BOT_NOT_FOUND_LINK, TRASH_BOT_DONT_UNDERSTAND
 
 
 class TrashBot:
@@ -64,6 +68,14 @@ class TrashBot:
         """TrashBot random love reply :return: str"""
         return random.choice(TRASH_BOT_LOVE)
 
+    def random_dont_understand(self) -> str:
+        """TrashBot random dont understand :return: str"""
+        return random.choice(TRASH_BOT_DONT_UNDERSTAND)
+
+    def not_found_link(self) -> str:
+        """TrashBot already exists message :return: str"""
+        return TRASH_BOT_NOT_FOUND_LINK
+
     def generate_bot_post_to_channel(self, sender_user_id: str, video_db_row: dict, message=None) -> str:
         """TrashBot post message to channel with message or without
         :param video_db_row: video row from db
@@ -94,9 +106,11 @@ class TrashBot:
         return f"video #{video_db_row['id']} https://www.youtube.com/watch?v={video_db_row['video_id']} video rating: {video_db_row['rating']} /5 "
 
     def ask_for_introduction(self, user_name) -> str:
+        """TrashBot ask for introduction message :return: str"""
         return f"Welcome to the random channel, <@{user_name}>! 🎉 You should introduce yourself to the rest of the team with an energizing trash video. 🎉"
 
     def get_emoji_event_response(self, emoji_name) -> str:
+        """TrashBot emoji event response :return: str"""
         return random.choice(TRASH_BOT_EMOJI_REPLIES) + f" -> :{emoji_name}:"
 
     def help(self) -> str:

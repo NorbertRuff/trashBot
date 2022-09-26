@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from slack_bolt import *
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
-from src.listeners import CommandListener, EventListener, MessageListener, ViewListener, ShortcutListener, \
+from src.listeners import CommandListener, EventListener, MessageListener, ViewSubmissionListener, ShortcutListener, \
     ActionListener
 from src.slack_bot import TrashBot
 
@@ -29,7 +29,7 @@ command_listener = CommandListener(app, bot, TRASH_CHANNEL_ID)
 message_listener = MessageListener(app, bot, TRASH_CHANNEL_ID)
 event_listener = EventListener(app, bot, TRASH_CHANNEL_ID)
 action_listener = ActionListener(app, bot, TRASH_CHANNEL_ID)
-view_listener = ViewListener(app, bot, TRASH_CHANNEL_ID)
+view_listener = ViewSubmissionListener(app, bot, TRASH_CHANNEL_ID)
 shortcuts_listener = ShortcutListener(app, bot, TRASH_CHANNEL_ID)
 
 

@@ -1,11 +1,14 @@
+"""
+This Listener is responsible for handling events in the slack workspace.
+"""
+
 from logging import Logger
 
 from slack_bolt import App, Ack, Say
 from slack_sdk import WebClient
 
 from src import utils
-from src.slack_bot import TrashBot, TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS, TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS, \
-    TRASH_BOT_DONT_UNDERSTAND
+from src.slack_bot import TrashBot, TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS, TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS
 from src.utils import blocks, save_video
 
 
@@ -99,4 +102,4 @@ class EventListener:
             return self.bot.random_hate_reply()
         if "source code" in text.lower():
             return 'https://github.com/NorbertRuff/trashBot'
-        return TRASH_BOT_DONT_UNDERSTAND
+        return self.bot.random_dont_understand()

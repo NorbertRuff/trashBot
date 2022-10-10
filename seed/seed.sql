@@ -87,4 +87,7 @@ VALUES ('me5rX7Y9XKU', 'Sad Ending - Cyanide & Happiness Shorts', 'ExplosmEntert
         'Fekete Pákó - Tart még tart a party (Official Video)', 'U03QZB1P5NC'),
        ('GJeJVOkHC4U', 'Matisz Nagypapa', 'effigggy', 'Matisz Nagypapa', 'U03QZB1P5NC'),
        ('ntfNGPDIG00', 'AC DC - Irígyeim Sokan Vagytok (mashup)', 'Pentium 040',
-        'AC DC - Irígyeim Sokan Vagytok (mashup)', 'U03QZB1P5NC');
+        'AC DC - Irígyeim Sokan Vagytok (mashup)', 'U03QZB1P5NC'),
+       ('cFXpQ3LVpkY', 'Egs - Ki Ez A Bolond (Prod. b3ncs1)', 'Dodzsem Klub', 'Egs - Ki Ez A Bolond (Prod. b3ncs1)',
+        'U03QZB1P5NC');
+

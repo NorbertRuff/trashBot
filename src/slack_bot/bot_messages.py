@@ -59,4 +59,12 @@ TRASH_BOT_ALREADY_IN_PLAYLIST = ':robot_face: I already have this video in the t
 TRASH_BOT_SHIT_HIT_THE_FAN = 'Something went wrong, shit hit the fan'
 TRASH_BOT_EMOJI_REPLIES = ['Its not really my job, but you should know that an emoji has been added',
                            'Great, an emoji has been added I\'m not sure if I should be happy or sad about this',
-                           'Great news!, an emoji has been added', 'A new emoji has been added']
+                           'Great news!, an emoji has been added', 'A new emoji has been added',
+                           'I\'m not sure if I should be happy or sad about this',
+                           'HYPER IMPORTANT NEWS: an emoji has been added',
+                           'Something has been added, but I\'m not sure what it is',
+                           'Keep calm and add an emoji',
+                           'JOHN CENA HAS ADDED AN EMOJI, oh wait, it was someone else',
+                           'I\'m doing my best, but I\'m not sure if I can handle this',
+                           'My job is to add trash videos, but I also have to notify you that an emoji has been added',
+                           'For some reason I have to tell you that an emoji has been added']

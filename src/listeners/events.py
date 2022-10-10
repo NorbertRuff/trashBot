@@ -18,17 +18,17 @@ class EventListener:
         self.app = bolt_app
         self.bot = bot
         self.trash_channel_id = trash_channel_id
+        self.app.event("team_join")(self.handle_team_join_events)
         self.app.event("message")(self.handle_message_events)
         self.app.event("app_mention")(self.handle_bot_mention)
         self.app.event("emoji_changed")(self.handle_emoji_changed_events)
-        self.app.event("team_join")(self.handle_team_join_events)
         self.app.event("app_home_opened")(self.handle_app_home_open_event)
 
-    def handle_message_events(self, message: dict, event: dict, say: Say, ack: Ack, logger: Logger):
+    def handle_message_events(self, event: dict, say: Say, ack: Ack, logger: Logger):
         """Handle message events"""
         ack()
-        subtype = message.get("subtype", "")
-        channel = message.get("channel", "")
+        subtype = event.get("subtype", "")
+        channel = event.get("channel", "")
         user = event.get("user", "")
         if not channel == self.trash_channel_id:
             return
@@ -62,18 +62,18 @@ class EventListener:
                 text=self.bot.get_emoji_event_response(emoji_name)
             )
 
-    def handle_team_join_events(self, event: dict, say: Say, ack: Ack, logger: Logger):
+    def handle_team_join_events(self, body: dict, event: dict, client: WebClient, ack: Ack, logger: Logger):
         """Handle team join events"""
-        logger.info(event)
+        logger.warning(event)
+        logger.warning(body)
         ack()
         user = event.get("user", "").get("id", "")
-        channel = event.get("channel", "")
-        if not user or not channel == self.trash_channel_id:
+        if not user:
             return
         if utils.user_is_bot(user, self.bot.bot_id):
             return
         text = self.bot.ask_for_introduction(user)
-        say(channel=self.trash_channel_id, text=text)
+        client.chat_postMessage(channel=self.trash_channel_id, text=text)
 
     def handle_app_home_open_event(self, event: dict, client: WebClient, ack: Ack, logger: Logger):
         """Handle app home open event"""

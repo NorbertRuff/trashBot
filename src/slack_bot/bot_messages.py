@@ -43,17 +43,27 @@ TRASH_BOT_ERROR_REPLIES = ['Error! ', 'Biip-bop-bup uh oh :robot_face: ', 'I can
 TRASH_BOT_LOVE = ['WOW thanks :heart_eyes: I Love you', ':heart_eyes: :heart_eyes: :heart_eyes:',
                   'finally someone who loves trash :heart_eyes:', 'everyone loves me :heart_eyes:',
                   ':heart_eyes:', 'you are the best :heart_eyes:']
-TRASH_BOT_HATE = [':cry: I\'m sorry, I hate you', ':cry: Well then fix me :robot_face: ', ':cry: I hate you :cry:',
+TRASH_BOT_HATE = ['Robot hate is not nice :robot_face:', 'Bot hate is not nice :robot_face:',
+                  'TODO: add more hate replies', 'Statistically speaking, you are wrong :robot_face:',
+                  'I am a robot, I can\'t feel hate :robot_face:',
+                  'Maybe you should try reading the source code :robot_face:',
+                  'But you made me do this :robot_face:',
+                  ':cry: I\'m sorry, I hate you', ':cry: Well then fix me :robot_face: ', ':cry: I hate you :cry:',
                   'Fix me very badly :cry:', 'I hate you too :heart_eyes:',
                   'You can fix me here: https://github.com/NorbertRuff/trashBot']
 
 TRASH_BOT_MESSAGE = ['add', 'add to playlist', 'add to trash']
 TRASH_BOT_VIDEO_ADDED = ':white_check_mark: Video added to trash playlist'
-TRASH_BOT_DONT_UNDERSTAND = ['Huh? I did not understand that', 'I don\'t understand that', 'I don\'t get it',
-                             'What?', 'What do you mean?', 'I don\'t know what you mean',
-                             ':thinking_face: :thinking_face: :thinking_face:',
-                             ':question: :question: :question:', 'I don\'t know what you are saying',
-                             'I don\'t know what you are trying to say']
+TRASH_BOT_DONT_UNDERSTAND = ['Huh? I did not understand that', 'I don\'t get it',
+                             'What?', 'My regex is not good enough to understand that',
+                             'My regex for understanding humans is just a placeholder',
+                             'I have a complicated regex to understand your message, but I don\'t know how to use it :cry:',
+                             'NASA is working on a regex that can understand your message, but it\'s not ready yet',
+                             ':white_check_mark: I posted this on StackOverflow, but no one answered me yet :cry:',
+                             'I don\'t understand that, but I posted it on StackOverflow answer: https://stackoverflow.com/a/12345678/12345678',
+                             'I don\'t understand that, but I posted it on StackOverflow answer: https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags/1732454#1732454',
+                             ':thinking_face: :thinking_face: :thinking_face: I don\'t know what you are trying to say',
+                             ':question: :question: :question: I don\'t know what you are saying']
 TRASH_BOT_NOT_FOUND_LINK = 'I could not find a link in this or in the previous message. Please use the command with /add <url>.'
 TRASH_BOT_ALREADY_IN_PLAYLIST = ':robot_face: I already have this video in the trash playlist.'
 TRASH_BOT_SHIT_HIT_THE_FAN = 'Something went wrong, shit hit the fan'

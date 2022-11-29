@@ -5,7 +5,7 @@ import random
 
 from .bot_messages import TRASHBOT_HELP_MSG, TRASH_BOT_EMOJI_REPLIES, TRASH_BOT_LOVE, TRASH_BOT_HATE, \
     TRASH_BOT_SHIT_HIT_THE_FAN, TRASH_BOT_ERROR_REPLIES, TRASH_BOT_SUCCESS_REPLIES, TRASH_BOT_GENERAL_REPLIES, \
-    TRASH_BOT_NOT_FOUND_LINK, TRASH_BOT_DONT_UNDERSTAND
+    TRASH_BOT_NOT_FOUND_LINK, TRASH_BOT_DONT_UNDERSTAND, TRASH_BOT_NEW_VIDEO_ADDED
 
 
 class TrashBot:
@@ -75,6 +75,10 @@ class TrashBot:
     def not_found_link(self) -> str:
         """TrashBot already exists message :return: str"""
         return TRASH_BOT_NOT_FOUND_LINK
+
+    def new_video_added(self) -> str:
+        """TrashBot new video event response :return: str"""
+        return random.choice(TRASH_BOT_NEW_VIDEO_ADDED)
 
     def generate_bot_post_to_channel(self, sender_user_id: str, video_db_row: dict, message=None) -> str:
         """TrashBot post message to channel with message or without

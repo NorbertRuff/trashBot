@@ -27,6 +27,7 @@ class ActionListener:
         self.app.action("open_add_trash_videos_modal")(self.handle_open_add_trash_videos_modal)
         self.app.action("open_send_trash_to_user_modal")(self.handle_open_send_random_trash_to_user_modal)
         self.app.action("open_list_trash_videos_modal")(self.handle_open_list_trash_videos_modal)
+        self.app.action("open_top_users_modal")(self.handle_open_top_users_modal)
         self.app.action(re.compile("navigate"))(self.handle_navigate)
         self.app.action("home_button")(self.handle_back_to_home)
 
@@ -128,6 +129,20 @@ class ActionListener:
             client.views_publish(
                 user_id=user_id,
                 view=blocks.get_video_list_modal(videos=videos, offset=0)
+            )
+        except Exception as e:
+            logger.error(f"Error publishing view to Home Tab: {e}")
+
+    def handle_open_top_users_modal(self, body: dict, client: WebClient, ack: Ack, logger: Logger):
+        """Return the top garbage collectors modal"""
+        logger.info(body)
+        ack()
+        users = data_manager.get_top_users()
+        user_id = body.get("user").get("id", "")
+        try:
+            client.views_publish(
+                user_id=user_id,
+                view=blocks.get_top_users_section(users=users)
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")

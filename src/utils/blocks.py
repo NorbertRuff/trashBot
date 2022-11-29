@@ -140,6 +140,14 @@ def get_home_view_blocks(user_id) -> dict:
             ),
             Divider(),
             Section(
+                text="*Check top 10 garbage collectors*",
+                accessory=Button(
+                    text=":trophy:", value="top_users", action_id="open_top_users_modal"
+                ),
+            ),
+            Divider(),
+
+            Section(
                 text="My source code is here :point_right: <https://github.com/NorbertRuff/trashBot|TrashBot on github>"
             ),
             Section(
@@ -326,13 +334,41 @@ def get_image_section(video_db_row: dict) -> dict:
     return Section(
         text=f"#*{video_db_row['id']}* -> "
              f"*{video_db_row['title']}*"
-             f"\n {video_db_row['author_name']} "
-             f"\n https://www.youtube.com/watch?v={video_db_row['video_id']}",
+             f"\n\n*Garbage collected by: <@{video_db_row['user_id']}> *"
+             f"\n\n {video_db_row['author_name']} "
+             f"\n\n https://www.youtube.com/watch?v={video_db_row['video_id']}",
         accessory=Image(
             image_url=f"https://i.ytimg.com/vi/{video_db_row['video_id']}/hqdefault.jpg",
             alt_text=f"{video_db_row['fallback']}",
         ),
     ).build()
+
+
+def get_top_users_section(users: list) -> dict:
+    """Builds and returns the top garbage collectors block"""
+    payload = Home(
+        blocks=[
+            Actions(elements=[Button(text="Back to the home screen", value="home", action_id="home_button")]),
+            Header(text="--|Top Garbage collectors|-- :trophy:"), ]
+    ).build()
+    payload["blocks"].append(Divider().build())
+    for i in range(len(users)):
+        if i == 0:
+            payload["blocks"].append(
+                Section(
+                    text=f"{i + 1}. :first_place_medal: <@{users[i]['user_id']}> -> {users[i]['video_count']} videos").build())
+        elif i == 1:
+            payload["blocks"].append(Section(
+                text=f"{i + 1}. :second_place_medal: <@{users[i]['user_id']}> -> {users[i]['video_count']} videos").build())
+        elif i == 2:
+            payload["blocks"].append(
+                Section(
+                    text=f"{i + 1}. :third_place_medal: <@{users[i]['user_id']}> -> {users[i]['video_count']} videos").build())
+        else:
+            payload["blocks"].append(
+                Section(text=f"{i + 1}. <@{users[i]['user_id']}> -> {users[i]['video_count']} videos").build())
+    payload["blocks"].append(Divider().build())
+    return payload
 
 
 def get_image_actions(video_db_row: dict) -> dict:

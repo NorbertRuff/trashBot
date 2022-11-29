@@ -78,3 +78,15 @@ TRASH_BOT_EMOJI_REPLIES = ['Its not really my job, but you should know that an e
                            'I\'m doing my best, but I\'m not sure if I can handle this',
                            'My job is to add trash videos, but I also have to notify you that an emoji has been added',
                            'For some reason I have to tell you that an emoji has been added']
+TRASH_BOT_NEW_VIDEO_ADDED = ['A new video has been added to the trash playlist', 'A new video has been added',
+                             'YAAY! A new video has been added', 'A new video has been added, I\'m so happy',
+                             'Someone added a new video to the trash playlist',
+                             'Finally someone added a new video to the trash playlist',
+                             '-jumps up and down- A new video has been added to the trash playlist',
+                             'Did you know that a new video has been added to the trash playlist?',
+                             'The trash playlist has a new video, I\'m so happy',
+                             'Great news! A new video has been added to the trash playlist',
+                             'ALERT! A new video has been added to the trash playlist',
+                             'BREAKING NEWS! A new video has been added to the trash playlist',
+                             'My job is to add trash videos, but I also have to notify you that a new video has been added to the trash playlist',
+                             'Do you know that a new video has been added to the trash playlist?']

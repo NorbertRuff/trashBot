@@ -59,7 +59,8 @@ class ViewSubmissionListener:
         say(channel=self.trash_channel_id, text=blocks.get_rating_section(video_id=video_id))
         ack()
 
-    def handle_modal_submission_trash_save(self, payload: dict, body: dict, ack: Ack, logger: Logger):
+    def handle_modal_submission_trash_save(self, payload: dict, client: WebClient, body: dict, ack: Ack,
+                                           logger: Logger):
         """Gets called when a user submits the modal to save trash to the database"""
         logger.info(body)
         sender_user_id = body.get("user", "").get("id", "")
@@ -80,4 +81,5 @@ class ViewSubmissionListener:
         data_manager.put_video_in_table(video_id=video_id, user_id=sender_user_id, fallback=youtube_data['title'],
                                         title=youtube_data['title'],
                                         author_name=youtube_data['author_name'])
+        client.chat_postMessage(channel=self.trash_channel_id, text=self.bot.new_video_added())
         ack()

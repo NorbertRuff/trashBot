@@ -88,6 +88,20 @@ def get_all_videos(cursor: RealDictCursor) -> list:
 
 
 @connection.connection_handler
+def get_top_users(cursor: RealDictCursor) -> list:
+    """Returns all videos from the database"""
+    query = """
+        SELECT user_id, count(user_id) as video_count
+        FROM videos
+        GROUP BY user_id
+        ORDER BY video_count DESC
+        LIMIT 10;
+        """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@connection.connection_handler
 def get_video_by_id(cursor: RealDictCursor, id: int) -> RealDictRow:
     """Returns videos from the database by id"""
     query = """

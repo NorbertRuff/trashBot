@@ -4,9 +4,10 @@ This Listener is responsible for handling commands sent by the user.
 from logging import Logger
 
 from slack_bolt import App, Respond, Ack, Say
+from slack_sdk import WebClient
 
 from src import data_manager, utils
-from src.slack_bot import TrashBot
+from src.slack_bot import TrashBot, TRASH_BOT_VIDEO_ADDED
 from src.utils import blocks, save_video
 
 
@@ -39,13 +40,15 @@ class CommandListener:
             response += f'#{video["id"]} {video["title"]} -> https://www.youtube.com/watch?v={video["video_id"]}\n'
         respond(response)
 
-    def handle_add_command(self, body: dict, respond: Respond, ack: Ack, logger: Logger):
+    def handle_add_command(self, body: dict, client: WebClient, respond: Respond, ack: Ack, logger: Logger):
         """Responds with the slackBot usage helper message"""
         logger.info(body)
         ack()
         text = body.get("text", "")
         user_id = body.get("user_id", "")
         response = save_video(text, user_id, self.bot)
+        if TRASH_BOT_VIDEO_ADDED in response:
+            client.chat_postMessage(channel=self.trash_channel_id, text=self.bot.new_video_added())
         respond(response)
 
     def handle_surprise_command(self, body: dict, respond: Respond, say: Say, ack: Ack, logger: Logger):
@@ -64,8 +67,7 @@ class CommandListener:
         say(channel=self.trash_channel_id, text=text)
         say(channel=self.trash_channel_id, text=blocks.get_rating_section(video_id))
 
-    def handle_message_to_channel_command(self, body: dict, respond: Respond, say: Say, ack: Ack,
-                                          logger: Logger):
+    def handle_message_to_channel_command(self, body: dict, respond: Respond, say: Say, ack: Ack, logger: Logger):
         """Sends a message to the channel"""
         logger.info(body)
         ack()

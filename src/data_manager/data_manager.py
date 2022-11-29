@@ -94,8 +94,7 @@ def get_top_users(cursor: RealDictCursor) -> list:
         SELECT user_id, count(user_id) as video_count
         FROM videos
         GROUP BY user_id
-        ORDER BY video_count DESC
-        LIMIT 10;
+        ORDER BY video_count DESC;
         """
     cursor.execute(query)
     return cursor.fetchall()

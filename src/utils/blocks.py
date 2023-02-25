@@ -146,6 +146,13 @@ def get_home_view_blocks(user_id) -> dict:
                 ),
             ),
             Divider(),
+            Section(
+                text="*Send a random challenge to channel*",
+                accessory=Button(
+                    text=":thought_balloon:", value="challenge", action_id="open_send_challenge_to_channel_modal"
+                ),
+            ),
+            Divider(),
 
             Section(
                 text="My source code is here :point_right: <https://github.com/NorbertRuff/trashBot|TrashBot on github>"
@@ -230,6 +237,20 @@ def get_send_trash_to_channel_modal() -> dict:
                 element=PlainTextInput(action_id="message_to_send"),
                 label="Message", optional=True, block_id="message_to_send"
             ),
+        ],
+    ).build()
+    return payload
+
+
+def get_send_challenge_to_channel_modal() -> dict:
+    """Builds and returns the send challenge to channel modal"""
+    payload = Modal(
+        title="TrashBot",
+        submit="Send",
+        close="Cancel",
+        callback_id="send_channel_challenge_modal",
+        blocks=[
+            Section(text="*Are you sure you want to send a challenge to the trash channel*"),
         ],
     ).build()
     return payload

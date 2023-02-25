@@ -4,7 +4,7 @@ This Listener is responsible for handling events in the slack workspace.
 
 from logging import Logger
 
-from slack_bolt import App, Ack, Say
+from slack_bolt import Ack, Say, App
 from slack_sdk import WebClient
 
 from src import utils

@@ -20,6 +20,7 @@ class ViewSubmissionListener:
         self.trash_channel_id = trash_channel_id
         self.app.view("send_user_trash_modal")(self.handle_modal_submission_trash_to_user)
         self.app.view("send_channel_trash_modal")(self.handle_modal_submission_trash_to_channel)
+        self.app.view("send_channel_challenge_modal")(self.handle_modal_submission_challenge_to_channel)
         self.app.view("save_trash_modal")(self.handle_modal_submission_trash_save)
 
     def handle_modal_submission_trash_to_user(self, payload: dict, body: dict, client: WebClient, ack: Ack,
@@ -57,6 +58,23 @@ class ViewSubmissionListener:
                                                      video_db_row=video_db_row)
         client.chat_postMessage(channel=self.trash_channel_id, text=text)
         say(channel=self.trash_channel_id, text=blocks.get_rating_section(video_id=video_id))
+        ack()
+
+    def handle_modal_submission_challenge_to_channel(self, payload: dict, body: dict, client: WebClient, ack: Ack,
+                                                     say: Say,
+                                                     logger: Logger):
+        """Gets called when a user submits the modal to send challenge to a channel"""
+        logger.info(body)
+        sender_user_id = body.get("user", "").get("id", "")
+        challenge = data_manager.get_random_challenge()
+        if not challenge:
+            ack()
+            logger.debug("No active challenges left in database")
+            return
+        challenge_id = challenge.get("id", "")
+        data_manager.update_challenge_status(challenge_id=challenge_id, status="completed")
+        text = self.bot.generate_bot_challenge_post_to_channel(challenge=challenge)
+        client.chat_postMessage(channel=self.trash_channel_id, text=text)
         ack()
 
     def handle_modal_submission_trash_save(self, payload: dict, client: WebClient, body: dict, ack: Ack,

@@ -136,3 +136,28 @@ def put_video_in_table(cursor: RealDictCursor, video_id: str, title: str, author
                 """
     cursor.execute(query, {'video_id': video_id, 'title': title, 'author_name': author_name, 'fallback': fallback,
                            'user_id': user_id, 'time': timestamp})
+
+
+@connection.connection_handler
+def get_random_challenge(cursor: RealDictCursor) -> RealDictRow:
+    """Returns a random challenge that has approved status"""
+    query = """
+        SELECT *
+        FROM challenges
+        WHERE status = 'approved'
+        OFFSET random() * (select count(*) from challenges)
+            limit 1
+        """
+    cursor.execute(query)
+    return cursor.fetchone()
+
+
+@connection.connection_handler
+def update_challenge_status(cursor: RealDictCursor, challenge_id: int, status: str) -> None:
+    """Update challenge status"""
+    query = """
+        UPDATE challenges
+        SET status = %(status)s
+        WHERE id = %(challenge_id)s;
+        """
+    cursor.execute(query, {'challenge_id': challenge_id, 'status': status})

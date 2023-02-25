@@ -90,3 +90,7 @@ TRASH_BOT_NEW_VIDEO_ADDED = ['A new video has been added to the trash playlist',
                              'BREAKING NEWS! A new video has been added to the trash playlist',
                              'My job is to add trash videos, but I also have to notify you that a new video has been added to the trash playlist',
                              'Do you know that a new video has been added to the trash playlist?']
+TRASH_BOT_CHALLENGE_TITLE = ['Attention! Today\'s challenge is: ', 'Today\'s challenge just arrived: ',
+                             'Today\'s challenge is here: ', 'Ready for today\'s challenge? ', 'Challenge time! ',
+                             'Voila! Today\'s challenge is: ', 'Beep boop! Today\'s challenge is: ',
+                             ]

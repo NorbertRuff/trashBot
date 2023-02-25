@@ -24,6 +24,7 @@ class ActionListener:
         self.app.action("open_help_page")(self.handle_open_help_page)
         self.app.action(re.compile("send_to_channel_button_action"))(self.handle_send_to_channel_button_action)
         self.app.action("open_send_trash_to_channel_modal")(self.handle_open_send_trash_to_channel_modal)
+        self.app.action("open_send_challenge_to_channel_modal")(self.handle_open_send_challenge_to_channel_modal)
         self.app.action("open_add_trash_videos_modal")(self.handle_open_add_trash_videos_modal)
         self.app.action("open_send_trash_to_user_modal")(self.handle_open_send_random_trash_to_user_modal)
         self.app.action("open_list_trash_videos_modal")(self.handle_open_list_trash_videos_modal)
@@ -115,6 +116,18 @@ class ActionListener:
             client.views_open(
                 trigger_id=body["trigger_id"],
                 view=blocks.get_send_trash_to_channel_modal()
+            )
+        except Exception as e:
+            logger.error(f"Error publishing view to Home Tab: {e}")
+
+    def handle_open_send_challenge_to_channel_modal(self, body: dict, client: WebClient, ack: Ack, logger: Logger):
+        """Return the send challenge to channel modal"""
+        logger.info(body)
+        ack()
+        try:
+            client.views_open(
+                trigger_id=body["trigger_id"],
+                view=blocks.get_send_challenge_to_channel_modal()
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")

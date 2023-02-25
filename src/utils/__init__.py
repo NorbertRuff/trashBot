@@ -1,2 +1,2 @@
-from .utils import *
 from .blocks import *
+from .utils import *

@@ -7,8 +7,9 @@ from slack_bolt import App, Respond, Ack, Say
 from slack_sdk import WebClient
 
 from src import data_manager, utils
+from src.blocks import get_rating_section
 from src.slack_bot import TrashBot, TRASH_BOT_VIDEO_ADDED
-from src.utils import blocks, save_video
+from src.utils import save_video
 
 
 # <------------------------command------------------------------->
@@ -65,7 +66,7 @@ class CommandListener:
         else:
             text = f"<@{user_id}> asked for a random video. {self.bot.random_general_reply()} \n {video_response}"
         say(channel=self.trash_channel_id, text=text)
-        say(channel=self.trash_channel_id, text=blocks.get_rating_section(video_id))
+        say(channel=self.trash_channel_id, text=get_rating_section(video_id))
 
     def handle_message_to_channel_command(self, body: dict, respond: Respond, say: Say, ack: Ack, logger: Logger):
         """Sends a message to the channel"""

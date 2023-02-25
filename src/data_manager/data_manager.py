@@ -3,10 +3,33 @@ psycopg2 Data handler for the project.
 psycopg2 documentation: https://www.psycopg.org/docs/
 """
 
+from enum import Enum
+
 from psycopg2.extras import RealDictCursor, RealDictRow
 
 from src.data_manager import connection
 from src.utils import make_new_timestamp
+
+
+class ChallengeCategory(Enum):
+    """Enum for challenge category"""
+    BLAST_FROM_THE_PAST = "Blast from the past"
+    THE_BEST_OF_THE_BEST = "The best of the best"
+    THE_WORST_OF_THE_WORST = "The worst of the worst"
+    GET_TO_KNOW_EACH_OTHER = "Get to know each other"
+    PURE_FANTASY = "Pure fantasy"
+    WEIRD_AND_WONDERFUL = "Weird and wonderful"
+    HISTORY_LESSON = "History lesson"
+    HIDDEN_TALENT = "Hidden talent"
+    HIDDEN_TREASURE = "Hidden treasure"
+    FIRST_DATE_QUESTIONS = "First date questions"
+    UNDEFINABLE = "Undefinable"
+
+
+class ChallengeType(Enum):
+    """Enum for challenge type"""
+    TEXT = "text"
+    PICTURE = "picture"
 
 
 @connection.connection_handler
@@ -161,3 +184,15 @@ def update_challenge_status(cursor: RealDictCursor, challenge_id: int, status: s
         WHERE id = %(challenge_id)s;
         """
     cursor.execute(query, {'challenge_id': challenge_id, 'status': status})
+
+
+@connection.connection_handler
+def add_challenge(cursor: RealDictCursor, challenge_type: str, challenge_category: str, challenge_text: str,
+                  user_id: str) -> None:
+    """Add challenge to the database with pending status"""
+    query = """
+        INSERT INTO challenges (type, title, challenge, status, user_id)
+        VALUES (%(challenge_type)s, %(challenge_category)s, %(challenge_text)s, 'pending', %(user_id)s);
+        """
+    cursor.execute(query, {'challenge_type': challenge_type, 'challenge_category': challenge_category,
+                           'challenge_text': challenge_text, 'user_id': user_id})

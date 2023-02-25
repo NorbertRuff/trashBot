@@ -7,8 +7,8 @@ from psycopg2.extras import RealDictRow
 from slack_bolt import Say
 
 from src import data_manager
+from src.blocks import get_rating_section
 from src.slack_bot import TrashBot, TRASH_BOT_ALREADY_IN_PLAYLIST, TRASH_BOT_VIDEO_ADDED, TRASH_BOT_NOT_FOUND_LINK
-from src.utils import blocks
 from src.utils.youtube import get_youtube_video_info
 
 YOUTUBE_URL_REGEX = (
@@ -58,7 +58,7 @@ def get_random_video_response(say: Say, bot: TrashBot) -> str or None:
     video_db_row = get_random_video_db_row()
     if video_db_row:
         say(f"{bot.random_general_reply()} video #{video_db_row['id']} https://www.youtube.com/watch?v={video_db_row['video_id']} video rating: {video_db_row['rating']} /5 ")
-        say(blocks.get_rating_section(video_db_row['video_id']))
+        say(get_rating_section(video_db_row['video_id']))
         return None
     return bot.general_error_reply()
 

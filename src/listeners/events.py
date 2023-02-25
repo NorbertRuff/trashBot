@@ -8,8 +8,9 @@ from slack_bolt import Ack, Say, App
 from slack_sdk import WebClient
 
 from src import utils
+from src.blocks import get_home_view_blocks
 from src.slack_bot import TrashBot, TRASH_BOT_GET_RANDOM_VIDEO_KEYWORDS, TRASH_BOT_UPLOAD_THIS_VIDEO_KEYWORDS
-from src.utils import blocks, save_video
+from src.utils import save_video
 
 
 # # <------------------------events------------------------------->
@@ -70,7 +71,7 @@ class EventListener:
         try:
             client.views_publish(
                 user_id=user_id,
-                view=blocks.get_home_view_blocks(user_id)
+                view=get_home_view_blocks(user_id)
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")

@@ -8,8 +8,9 @@ from slack_bolt import App, Ack, Respond, Say
 from slack_sdk import WebClient
 
 from src import utils, data_manager
+from src.blocks import get_rating_section
+from src.data_manager import ChallengeCategory
 from src.slack_bot import TrashBot
-from src.utils import blocks
 
 
 # <------------------------views------------------------------->
@@ -21,6 +22,7 @@ class ViewSubmissionListener:
         self.app.view("send_user_trash_modal")(self.handle_modal_submission_trash_to_user)
         self.app.view("send_channel_trash_modal")(self.handle_modal_submission_trash_to_channel)
         self.app.view("send_channel_challenge_modal")(self.handle_modal_submission_challenge_to_channel)
+        self.app.view("save_challenge_modal")(self.handle_modal_submission_save_challenge_to_db)
         self.app.view("save_trash_modal")(self.handle_modal_submission_trash_save)
 
     def handle_modal_submission_trash_to_user(self, payload: dict, body: dict, client: WebClient, ack: Ack,
@@ -57,7 +59,7 @@ class ViewSubmissionListener:
         text = self.bot.generate_bot_post_to_channel(sender_user_id=sender_user_id, message=message_to_send,
                                                      video_db_row=video_db_row)
         client.chat_postMessage(channel=self.trash_channel_id, text=text)
-        say(channel=self.trash_channel_id, text=blocks.get_rating_section(video_id=video_id))
+        say(channel=self.trash_channel_id, text=get_rating_section(video_id=video_id))
         ack()
 
     def handle_modal_submission_challenge_to_channel(self, payload: dict, body: dict, client: WebClient, ack: Ack,
@@ -75,6 +77,31 @@ class ViewSubmissionListener:
         data_manager.update_challenge_status(challenge_id=challenge_id, status="completed")
         text = self.bot.generate_bot_challenge_post_to_channel(challenge=challenge)
         client.chat_postMessage(channel=self.trash_channel_id, text=text)
+        ack()
+
+    def handle_modal_submission_save_challenge_to_db(self, payload: dict, body: dict, client: WebClient, ack: Ack,
+                                                     say: Say,
+                                                     logger: Logger):
+        """Gets called when a user submits the modal to save challenge to database"""
+        logger.info(body)
+        user_id = body.get("user", "").get("id", "")
+        values = payload.get("state", "").get("values", "")
+        logger.info(values)
+        challenge_type = values.get("challenge_type", "") \
+            .get("static_select_type", "") \
+            .get("selected_option", "") \
+            .get("value", "")
+        challenge_category = values.get("challenge_category", "") \
+            .get("static_select_category", "") \
+            .get("selected_option", "") \
+            .get("value", "")
+        challenge_text = values.get("challenge_text", "") \
+            .get("challenge_text", "") \
+            .get("value", "")
+        logger.debug(ChallengeCategory[challenge_category].value)
+        data_manager.add_challenge(challenge_type=challenge_type,
+                                   challenge_category=ChallengeCategory[challenge_category].value,
+                                   challenge_text=challenge_text, user_id=user_id)
         ack()
 
     def handle_modal_submission_trash_save(self, payload: dict, client: WebClient, body: dict, ack: Ack,

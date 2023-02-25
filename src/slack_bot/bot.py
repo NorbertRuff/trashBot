@@ -5,7 +5,8 @@ import random
 
 from .bot_messages import TRASHBOT_HELP_MSG, TRASH_BOT_EMOJI_REPLIES, TRASH_BOT_LOVE, TRASH_BOT_HATE, \
     TRASH_BOT_SHIT_HIT_THE_FAN, TRASH_BOT_ERROR_REPLIES, TRASH_BOT_SUCCESS_REPLIES, TRASH_BOT_GENERAL_REPLIES, \
-    TRASH_BOT_NOT_FOUND_LINK, TRASH_BOT_DONT_UNDERSTAND, TRASH_BOT_NEW_VIDEO_ADDED, TRASH_BOT_CHALLENGE_TITLE
+    TRASH_BOT_NOT_FOUND_LINK, TRASH_BOT_DONT_UNDERSTAND, TRASH_BOT_NEW_VIDEO_ADDED, TRASH_BOT_CHALLENGE_TITLE, \
+    SLACK_EMOJIS
 
 
 class TrashBot:
@@ -97,13 +98,15 @@ class TrashBot:
         :param challenge: the challenge that the user sent
         :return: str
         """
-        challenge_title = challenge.get('title', '')
+        challenge_category = challenge.get('title', '')
         challenge_type = challenge.get('type', '')
         challenge_text = challenge.get('challenge', '')
-        trashbot_challenge_text = random.choice(TRASH_BOT_CHALLENGE_TITLE)
+        trash_bot_challenge_title = random.choice(TRASH_BOT_CHALLENGE_TITLE)
+        category_emoji = random.choice(SLACK_EMOJIS)
         challenge_emoji = ':thought_balloon:' if challenge_type == 'text' else ':frame_with_picture:'
-        return f"This week challenge just arrived! \n\n :star2: *[{challenge_title}]* :star2:\n\n" \
-               f"_{challenge_text}_\n\n" \
+        return f"{category_emoji} _[{challenge_category}]_ {category_emoji}\n" \
+               f"{trash_bot_challenge_title}\n\n" \
+               f"*{challenge_text}*\n\n" \
                f"Post your {challenge_emoji} in this thread and we will vote for the best one!"
 
     def generate_dm_text(self, recipient_user_id: str, sender_user_id: str, video_db_row: dict, message=None) -> str:

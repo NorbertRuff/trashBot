@@ -9,8 +9,10 @@ from slack_bolt import App, Ack, Say
 from slack_sdk import WebClient
 
 from src import data_manager
+from src.blocks import get_help_block, get_rating_section, get_send_trash_to_user_modal, get_save_trash_modal, \
+    get_send_trash_to_channel_modal, get_send_challenge_to_channel_modal, get_video_list_modal, get_top_users_section, \
+    get_home_view_blocks, get_save_challenge_to_db_modal
 from src.slack_bot import TrashBot
-from src.utils import blocks
 
 
 # # <------------------------action------------------------------->
@@ -20,17 +22,22 @@ class ActionListener:
         self.bot = bot
         self.trash_channel_id = trash_channel_id
         self.app.action(re.compile("rate_video"))(self.rating_button_click)
+        self.app.action(re.compile("static_select"))(self.handle_static_select_action)
         self.app.action("send_to_user_from_list_button_action")(self.handle_open_send_trash_to_user_modal)
         self.app.action("open_help_page")(self.handle_open_help_page)
         self.app.action(re.compile("send_to_channel_button_action"))(self.handle_send_to_channel_button_action)
         self.app.action("open_send_trash_to_channel_modal")(self.handle_open_send_trash_to_channel_modal)
         self.app.action("open_send_challenge_to_channel_modal")(self.handle_open_send_challenge_to_channel_modal)
+        self.app.action("open_save_challenge_to_db_modal")(self.handle_open_save_challenge_to_db_modal)
         self.app.action("open_add_trash_videos_modal")(self.handle_open_add_trash_videos_modal)
         self.app.action("open_send_trash_to_user_modal")(self.handle_open_send_random_trash_to_user_modal)
         self.app.action("open_list_trash_videos_modal")(self.handle_open_list_trash_videos_modal)
         self.app.action("open_top_users_modal")(self.handle_open_top_users_modal)
         self.app.action(re.compile("navigate"))(self.handle_navigate)
         self.app.action("home_button")(self.handle_back_to_home)
+
+    def handle_static_select_action(self, body: dict, client: WebClient, ack: Ack, logger: Logger):
+        ack()
 
     def rating_button_click(self, body: dict, ack: Ack, logger: Logger):
         """Handle the rating button click"""
@@ -54,7 +61,7 @@ class ActionListener:
         try:
             client.views_publish(
                 user_id=user_id,
-                view=blocks.get_help_block()
+                view=get_help_block()
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -69,7 +76,7 @@ class ActionListener:
         video_db_row = data_manager.get_video_by_id(video_id)
         text = self.bot.generate_bot_post_to_channel(sender_user_id=user_id, message="", video_db_row=video_db_row)
         client.chat_postMessage(text=text, channel=self.trash_channel_id)
-        say(channel=self.trash_channel_id, text=blocks.get_rating_section(video_db_row.get("video_id", "")))
+        say(channel=self.trash_channel_id, text=get_rating_section(video_db_row.get("video_id", "")))
 
     def handle_open_send_random_trash_to_user_modal(self, body: dict, client: WebClient, ack: Ack, logger: Logger):
         """Return the send random trash to user modal"""
@@ -78,7 +85,7 @@ class ActionListener:
         try:
             client.views_open(
                 trigger_id=body["trigger_id"],
-                view=blocks.get_send_trash_to_user_modal()
+                view=get_send_trash_to_user_modal()
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -90,7 +97,7 @@ class ActionListener:
         try:
             client.views_open(
                 trigger_id=body["trigger_id"],
-                view=blocks.get_save_trash_modal()
+                view=get_save_trash_modal()
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -103,7 +110,7 @@ class ActionListener:
         try:
             client.views_open(
                 trigger_id=body["trigger_id"],
-                view=blocks.get_send_trash_to_user_modal(video_id=video_id)
+                view=get_send_trash_to_user_modal(video_id=video_id)
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -115,7 +122,7 @@ class ActionListener:
         try:
             client.views_open(
                 trigger_id=body["trigger_id"],
-                view=blocks.get_send_trash_to_channel_modal()
+                view=get_send_trash_to_channel_modal()
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -127,7 +134,19 @@ class ActionListener:
         try:
             client.views_open(
                 trigger_id=body["trigger_id"],
-                view=blocks.get_send_challenge_to_channel_modal()
+                view=get_send_challenge_to_channel_modal()
+            )
+        except Exception as e:
+            logger.error(f"Error publishing view to Home Tab: {e}")
+
+    def handle_open_save_challenge_to_db_modal(self, body: dict, client: WebClient, ack: Ack, logger: Logger):
+        """Return the send challenge to channel modal"""
+        logger.info(body)
+        ack()
+        try:
+            client.views_open(
+                trigger_id=body["trigger_id"],
+                view=get_save_challenge_to_db_modal()
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -141,7 +160,7 @@ class ActionListener:
         try:
             client.views_publish(
                 user_id=user_id,
-                view=blocks.get_video_list_modal(videos=videos, offset=0)
+                view=get_video_list_modal(videos=videos, offset=0)
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -155,7 +174,7 @@ class ActionListener:
         try:
             client.views_publish(
                 user_id=user_id,
-                view=blocks.get_top_users_section(users=users)
+                view=get_top_users_section(users=users)
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -169,7 +188,7 @@ class ActionListener:
         try:
             client.views_update(
                 view_id=body['container']['view_id'],
-                view=blocks.get_video_list_modal(videos, page)
+                view=get_video_list_modal(videos, page)
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
@@ -182,7 +201,7 @@ class ActionListener:
         try:
             client.views_publish(
                 user_id=user_id,
-                view=blocks.get_home_view_blocks(user_id)
+                view=get_home_view_blocks(user_id)
             )
         except Exception as e:
             logger.error(f"Error publishing view to Home Tab: {e}")
